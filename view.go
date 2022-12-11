@@ -58,20 +58,14 @@ func (c Cmd) View() *cli.Command {
 			inProgressList := newList(inProgressStatus)
 			completedList := newList(completedStatus)
 
-			todosByStatus := map[Status]*List{
-				todoStatus:       uncompletedList,
-				inProgressStatus: inProgressList,
-				completedStatus:  completedList,
-			}
-
 			for _, todo := range todos {
 				switch todo.status {
 				case todoStatus:
-					todosByStatus[todoStatus].addTodo(todo)
+					uncompletedList.addTodo(todo)
 				case inProgressStatus:
-					todosByStatus[inProgressStatus].addTodo(todo)
+					inProgressList.addTodo(todo)
 				case completedStatus:
-					todosByStatus[completedStatus].addTodo(todo)
+					completedList.addTodo(todo)
 				default:
 				}
 			}
@@ -85,7 +79,7 @@ func (c Cmd) View() *cli.Command {
 				gap,
 				completedList.render(),
 			)
-			fmt.Println("\n" + out)
+			fmt.Print(out)
 			return nil
 		},
 	}
