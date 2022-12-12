@@ -73,20 +73,20 @@ func (td *Todos) parseFile() {
 	}
 }
 
-func (td *Todos) writeToFile() {
+func (td *Todos) writeToFile() error {
 	update := strings.Builder{}
 
 	_, err := update.WriteString(td.uncompleted.String())
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	_, err = update.WriteString(td.inProgress.String())
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	_, err = update.WriteString(td.completed.String())
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	if err = os.Truncate(td.filename, 0); err != nil {
@@ -95,10 +95,11 @@ func (td *Todos) writeToFile() {
 
 	f, err := os.OpenFile(td.filename, os.O_RDWR, 0777)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	_, err = f.WriteString(update.String())
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }

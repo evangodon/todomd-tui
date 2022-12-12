@@ -11,7 +11,7 @@ func (cmd Cmd) Add() *cli.Command {
 	return &cli.Command{
 		Name:    "add",
 		Aliases: []string{"a"},
-		Usage:   "Add a todos",
+		Usage:   "Add a todo",
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:  "name",
@@ -39,7 +39,11 @@ func (cmd Cmd) Add() *cli.Command {
 
 			todosList.uncompleted.addTodo(newTodo(todoName, uncompletedStatus))
 
-			todosList.writeToFile()
+			err = todosList.writeToFile()
+			if err != nil {
+				return err
+			}
+			cmd.Log(logSuccess, "Added : "+todoName)
 
 			return nil
 		},

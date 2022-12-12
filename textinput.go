@@ -20,6 +20,7 @@ func initialModel() textinputModel {
 	ti := textinput.New()
 	ti.Placeholder = ""
 	ti.Focus()
+	ti.CharLimit = 100
 
 	return textinputModel{
 		textInput: ti,
@@ -52,7 +53,7 @@ func (m textinputModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m textinputModel) View() string {
 	return fmt.Sprintf(
-		"Name of the todo:\n\n%s\n\n%s",
+		"New todo:\n%s\n\n%s",
 		m.textInput.View(),
 		"(esc to quit)",
 	) + "\n"

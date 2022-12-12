@@ -58,7 +58,7 @@ func (l *List) String() string {
 	out.WriteString("\n\n")
 
 	for _, todo := range l.items {
-		line := fmt.Sprintf("%s  %s\n", statusData[l.status].mdIcon, todo.body)
+		line := fmt.Sprintf("%s %s\n", statusData[l.status].mdIcon, todo.body)
 		out.WriteString(line)
 	}
 	out.WriteString("\n")
@@ -71,34 +71,12 @@ func HeaderStyle(status Status) string {
 
 	switch status {
 	case uncompletedStatus:
-		return fmt.Sprintf("%s %s", data.terminalIcon, data.header)
+		return fmt.Sprintf("%s %s", data.termHeaderBlock, data.header)
 	case inProgressStatus:
-		return fmt.Sprintf("%s %s", data.terminalIcon, data.header)
+		return fmt.Sprintf("%s %s", data.termHeaderBlock, data.header)
 	case completedStatus:
-		return fmt.Sprintf("%s %s", data.terminalIcon, data.header)
+		return fmt.Sprintf("%s %s", data.termHeaderBlock, data.header)
 	default:
 		return "UNKNOWN"
 	}
-}
-
-var statusData = map[Status]struct {
-	terminalIcon string
-	mdIcon       string
-	header       string
-}{
-	uncompletedStatus: {
-		terminalIcon: lg.NewStyle().Background(blue).Render(block),
-		mdIcon:       "- [ ]",
-		header:       "TODO",
-	},
-	inProgressStatus: {
-		terminalIcon: lg.NewStyle().Background(yellow).Render(block),
-		mdIcon:       "- [ ]",
-		header:       "IN-PROGRESS",
-	},
-	completedStatus: {
-		terminalIcon: lg.NewStyle().Background(green).Render(block),
-		mdIcon:       "- [x]",
-		header:       "DONE",
-	},
 }

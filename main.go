@@ -23,7 +23,7 @@ func main() {
 			&cli.StringFlag{
 				Name:  "file",
 				Value: "todo.md",
-				Usage: "The file to read",
+				Usage: "Loads todos from `FILE`",
 			},
 		},
 	}
