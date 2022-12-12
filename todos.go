@@ -9,18 +9,18 @@ import (
 )
 
 type Todos struct {
-	uncompleted *List
-	inProgress  *List
-	completed   *List
+	uncompleted *Group
+	inProgress  *Group
+	completed   *Group
 	filename    string
 }
 
 func newTodos(filename string) *Todos {
 
 	todos := &Todos{
-		uncompleted: newList(uncompletedStatus),
-		inProgress:  newList(inProgressStatus),
-		completed:   newList(completedStatus),
+		uncompleted: newGroup(uncompletedStatus),
+		inProgress:  newGroup(inProgressStatus),
+		completed:   newGroup(completedStatus),
 		filename:    filename,
 	}
 

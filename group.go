@@ -8,43 +8,43 @@ import (
 )
 
 // A list of todos of the same type
-type List struct {
+type Group struct {
 	status Status
 	items  []*Todo
 }
 
-func newList(status Status) *List {
-	return &List{
+func newGroup(status Status) *Group {
+	return &Group{
 		status: status,
 		items:  []*Todo{},
 	}
 }
 
-func (l *List) addTodo(todo Todo) {
-	l.items = append(l.items, &todo)
+func (g *Group) addTodo(todo Todo) {
+	g.items = append(g.items, &todo)
 }
 
 var listContainer = lg.NewStyle().Padding(1).Render
 
-func (l *List) render() string {
+func (g *Group) render() string {
 	out := strings.Builder{}
-	status := Status(l.status)
+	status := Status(g.status)
 	out.WriteString(HeaderStyle(status))
 	out.WriteString("\n\n")
 
-	for _, t := range l.items {
+	for _, t := range g.items {
 		out.WriteString(t.render())
 	}
 
 	return listContainer(out.String())
 }
 
-func (l *List) String() string {
-	data := statusData[l.status]
+func (g *Group) String() string {
+	data := statusData[g.status]
 	b := "#"
 	var header string
 	out := strings.Builder{}
-	switch l.status {
+	switch g.status {
 	case uncompletedStatus:
 		header = fmt.Sprintf("%s %s", b, data.header)
 	case inProgressStatus:
@@ -57,8 +57,8 @@ func (l *List) String() string {
 	out.WriteString(header)
 	out.WriteString("\n\n")
 
-	for _, todo := range l.items {
-		line := fmt.Sprintf("%s %s\n", statusData[l.status].mdIcon, todo.body)
+	for _, todo := range g.items {
+		line := fmt.Sprintf("%s %s\n", statusData[g.status].mdIcon, todo.body)
 		out.WriteString(line)
 	}
 	out.WriteString("\n")
