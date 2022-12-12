@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
@@ -17,7 +16,9 @@ func (c Cmd) View() *cli.Command {
 			file := ctx.String("file")
 
 			todosList := newTodos(file)
-			todosList.parseFile()
+			if err := todosList.parseFile(); err != nil {
+				return err
+			}
 
 			gap := strings.Repeat(" ", 8)
 			out := lipgloss.JoinHorizontal(
@@ -28,7 +29,7 @@ func (c Cmd) View() *cli.Command {
 				gap,
 				todosList.completed.render(),
 			)
-			fmt.Print(out)
+			c.Log(logDefault, out)
 			return nil
 		},
 	}

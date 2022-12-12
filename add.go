@@ -22,7 +22,9 @@ func (cmd Cmd) Add() *cli.Command {
 		Action: func(ctx *cli.Context) error {
 			filename := ctx.String("file")
 			todosList := newTodos(filename)
-			todosList.parseFile()
+			if err := todosList.parseFile(); err != nil {
+				return err
+			}
 
 			p := tea.NewProgram(initialModel())
 

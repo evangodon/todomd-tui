@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	"log"
+	"fmt"
 	"os"
 	"regexp"
 	"strings"
@@ -27,10 +27,10 @@ func newTodos(filename string) *Todos {
 	return todos
 }
 
-func (td *Todos) parseFile() {
+func (td *Todos) parseFile() error {
 	f, err := os.OpenFile(td.filename, os.O_RDWR, 0777)
 	if err != nil {
-		log.Fatal("Error openeing file: ", err)
+		return fmt.Errorf("error opening file: %v", err)
 	}
 	scanner := bufio.NewScanner(f)
 	todos := make([]Todo, 0)
@@ -71,26 +71,24 @@ func (td *Todos) parseFile() {
 		default:
 		}
 	}
+	return nil
 }
 
 func (td *Todos) writeToFile() error {
 	update := strings.Builder{}
 
-	_, err := update.WriteString(td.uncompleted.String())
-	if err != nil {
+	if _, err := update.WriteString(td.uncompleted.String()); err != nil {
 		return err
 	}
-	_, err = update.WriteString(td.inProgress.String())
-	if err != nil {
+	if _, err := update.WriteString(td.inProgress.String()); err != nil {
 		return err
 	}
-	_, err = update.WriteString(td.completed.String())
-	if err != nil {
+	if _, err := update.WriteString(td.completed.String()); err != nil {
 		return err
 	}
 
-	if err = os.Truncate(td.filename, 0); err != nil {
-		log.Printf("Failed to truncate: %v", err)
+	if err := os.Truncate(td.filename, 0); err != nil {
+		return fmt.Errorf("failed to truncate: %v", err)
 	}
 
 	f, err := os.OpenFile(td.filename, os.O_RDWR, 0777)
