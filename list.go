@@ -39,18 +39,66 @@ func (l *List) render() string {
 	return listContainer(out.String())
 }
 
-func HeaderStyle(status Status) string {
-	switch status {
-	case todoStatus:
-		b := lg.NewStyle().Background(blue).Render(block)
-		return fmt.Sprintf("%s  %s", b, "TODO")
+func (l *List) String() string {
+	data := statusData[l.status]
+	b := "#"
+	var header string
+	out := strings.Builder{}
+	switch l.status {
+	case uncompletedStatus:
+		header = fmt.Sprintf("%s %s", b, data.header)
 	case inProgressStatus:
-		b := lg.NewStyle().Background(yellow).Render(block)
-		return fmt.Sprintf("%s  %s", b, "IN-PROGRESS")
+		header = fmt.Sprintf("%s %s", b, data.header)
 	case completedStatus:
-		b := lg.NewStyle().Background(mauve).Render(block)
-		return fmt.Sprintf("%s  %s", b, "COMPLETED")
+		header = fmt.Sprintf("%s %s", b, data.header)
 	default:
 		return "UNKNOWN"
 	}
+	out.WriteString(header)
+	out.WriteString("\n\n")
+
+	for _, todo := range l.items {
+		line := fmt.Sprintf("%s  %s\n", statusData[l.status].mdIcon, todo.body)
+		out.WriteString(line)
+	}
+	out.WriteString("\n")
+
+	return out.String()
+}
+
+func HeaderStyle(status Status) string {
+	data := statusData[status]
+
+	switch status {
+	case uncompletedStatus:
+		return fmt.Sprintf("%s %s", data.terminalIcon, data.header)
+	case inProgressStatus:
+		return fmt.Sprintf("%s %s", data.terminalIcon, data.header)
+	case completedStatus:
+		return fmt.Sprintf("%s %s", data.terminalIcon, data.header)
+	default:
+		return "UNKNOWN"
+	}
+}
+
+var statusData = map[Status]struct {
+	terminalIcon string
+	mdIcon       string
+	header       string
+}{
+	uncompletedStatus: {
+		terminalIcon: lg.NewStyle().Background(blue).Render(block),
+		mdIcon:       "- [ ]",
+		header:       "TODO",
+	},
+	inProgressStatus: {
+		terminalIcon: lg.NewStyle().Background(yellow).Render(block),
+		mdIcon:       "- [ ]",
+		header:       "IN-PROGRESS",
+	},
+	completedStatus: {
+		terminalIcon: lg.NewStyle().Background(green).Render(block),
+		mdIcon:       "- [x]",
+		header:       "DONE",
+	},
 }

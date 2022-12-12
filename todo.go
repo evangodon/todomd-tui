@@ -9,14 +9,14 @@ import (
 type Status int
 
 const (
-	todoStatus Status = iota
+	uncompletedStatus Status = iota
 	completedStatus
 	inProgressStatus
 )
 
 func (s Status) String() string {
 	switch s {
-	case todoStatus:
+	case uncompletedStatus:
 		return "TODO"
 	case inProgressStatus:
 		return "IN-PROGRESS"
@@ -55,7 +55,7 @@ func (t Todo) render() string {
 	var body string
 
 	switch t.status {
-	case todoStatus:
+	case uncompletedStatus:
 		body = t.body
 		icon = "▢"
 	case inProgressStatus:

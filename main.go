@@ -19,6 +19,13 @@ func main() {
 		Name:     "todo",
 		Usage:    "create a todo",
 		Commands: commands,
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:  "file",
+				Value: "todo.md",
+				Usage: "The file to read",
+			},
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
