@@ -16,7 +16,7 @@ type (
 	errMsg error
 )
 
-func initialModel() textinputModel {
+func initialTextinputModel() textinputModel {
 	ti := textinput.New()
 	ti.Placeholder = ""
 	ti.Focus()

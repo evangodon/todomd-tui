@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"sort"
 	"strings"
 
 	lg "github.com/charmbracelet/lipgloss"
@@ -22,6 +24,20 @@ func newGroup(status Status) *Group {
 
 func (g *Group) addTodo(todo Todo) {
 	g.items = append(g.items, &todo)
+}
+
+func (g *Group) removeTodo(todo Todo) error {
+	n := len(g.items)
+	index := sort.Search(n, func(i int) bool {
+		return g.items[i].body == todo.body
+	})
+
+	if index == n {
+		return errors.New("todo not found in TodosList")
+	}
+
+	g.items = append(g.items[:index], g.items[index+1:]...)
+	return nil
 }
 
 var listContainer = lg.NewStyle().Padding(1).Render

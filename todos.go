@@ -16,15 +16,12 @@ type Todos struct {
 }
 
 func newTodos(filename string) *Todos {
-
-	todos := &Todos{
+	return &Todos{
 		uncompleted: newGroup(uncompletedStatus),
 		inProgress:  newGroup(inProgressStatus),
 		completed:   newGroup(completedStatus),
 		filename:    filename,
 	}
-
-	return todos
 }
 
 func (td *Todos) parseFile() error {
@@ -40,15 +37,15 @@ func (td *Todos) parseFile() error {
 		line := scanner.Text()
 		line = strings.TrimSpace(line)
 
-		if strings.Contains(line, "# TODO") {
+		if strings.Contains(line, statusData[uncompletedStatus].header) {
 			currentStatus = uncompletedStatus
 		}
 
-		if strings.Contains(line, "# IN-PROGRESS") {
+		if strings.Contains(line, statusData[inProgressStatus].header) {
 			currentStatus = inProgressStatus
 		}
 
-		if strings.Contains(line, "# DONE") {
+		if strings.Contains(line, statusData[completedStatus].header) {
 			currentStatus = completedStatus
 		}
 
@@ -99,5 +96,27 @@ func (td *Todos) writeToFile() error {
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (td *Todos) startTodo(todo Todo) error {
+	err := td.uncompleted.removeTodo(todo)
+	if err != nil {
+		return err
+	}
+	todo.status = inProgressStatus
+	td.inProgress.addTodo(todo)
+
+	return nil
+}
+
+func (td *Todos) completeTodo(todo Todo) error {
+	err := td.inProgress.removeTodo(todo)
+	if err != nil {
+		return err
+	}
+	todo.status = completedStatus
+	td.completed.addTodo(todo)
+
 	return nil
 }

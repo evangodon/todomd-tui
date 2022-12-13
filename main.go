@@ -12,6 +12,8 @@ func main() {
 	commands := []*cli.Command{
 		cmd.Add(),
 		cmd.View(),
+		cmd.Start(),
+		cmd.Complete(),
 	}
 
 	app := &cli.App{

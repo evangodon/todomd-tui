@@ -26,7 +26,7 @@ func (cmd Cmd) Add() *cli.Command {
 				return err
 			}
 
-			p := tea.NewProgram(initialModel())
+			p := tea.NewProgram(initialTextinputModel())
 
 			m, err := p.Run()
 			if err != nil {
