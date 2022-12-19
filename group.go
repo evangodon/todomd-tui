@@ -6,19 +6,22 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/charmbracelet/lipgloss"
 	lg "github.com/charmbracelet/lipgloss"
 )
 
 // A list of todos of the same type
 type Group struct {
-	status Status
-	items  []*Todo
+	status   Status
+	items    []*Todo
+	maxWidth int
 }
 
 func newGroup(status Status) *Group {
 	return &Group{
-		status: status,
-		items:  []*Todo{},
+		status:   status,
+		items:    []*Todo{},
+		maxWidth: 10,
 	}
 }
 
@@ -40,16 +43,27 @@ func (g *Group) removeTodo(todo Todo) error {
 	return nil
 }
 
-var listContainer = lg.NewStyle().Padding(1).Render
+var listContainer = lg.NewStyle().Padding(0, 1).Render
 
 func (g *Group) render() string {
 	out := strings.Builder{}
 	status := Status(g.status)
 	out.WriteString(HeaderStyle(status))
-	out.WriteString("\n\n")
+	out.WriteString("\n")
+
+	if len(g.items) == 0 {
+		out.WriteString(dimText("\n(none)"))
+		return out.String()
+	}
 
 	for _, t := range g.items {
-		out.WriteString(t.render())
+		s := t.render(g.maxWidth)
+		out.WriteString("\n")
+		out.WriteString(s)
+	}
+
+	if len(g.items) == 0 {
+		out.WriteString(dimText("\n(none)"))
 	}
 
 	return listContainer(out.String())
@@ -57,9 +71,10 @@ func (g *Group) render() string {
 
 func (g *Group) String() string {
 	data := statusData[g.status]
+	s := strings.Builder{}
 	b := "#"
 	var header string
-	out := strings.Builder{}
+
 	switch g.status {
 	case uncompletedStatus:
 		header = fmt.Sprintf("%s %s", b, data.header)
@@ -70,16 +85,21 @@ func (g *Group) String() string {
 	default:
 		return "UNKNOWN"
 	}
-	out.WriteString(header)
-	out.WriteString("\n\n")
+	s.WriteString(header)
+	s.WriteString("\n\n")
+
+	if len(g.items) == 0 {
+		s.WriteString("none")
+		return s.String()
+	}
 
 	for _, todo := range g.items {
 		line := fmt.Sprintf("%s %s\n", statusData[g.status].mdIcon, todo.body)
-		out.WriteString(line)
+		s.WriteString(line)
 	}
-	out.WriteString("\n")
+	s.WriteString("\n")
 
-	return out.String()
+	return s.String()
 }
 
 func HeaderStyle(status Status) string {
@@ -95,4 +115,8 @@ func HeaderStyle(status Status) string {
 	default:
 		return "UNKNOWN"
 	}
+}
+
+func (g *Group) Width() int {
+	return lipgloss.Width(g.render())
 }

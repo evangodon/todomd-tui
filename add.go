@@ -45,7 +45,7 @@ func (cmd Cmd) Add() *cli.Command {
 			if err != nil {
 				return err
 			}
-			cmd.Log(logSuccess, "Added : "+todoName)
+			cmd.Log(logSuccess, "Added: "+todoName)
 
 			return nil
 		},

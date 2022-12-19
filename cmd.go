@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+
+	"golang.org/x/term"
+)
 
 type Cmd struct{}
 
@@ -16,6 +21,16 @@ const (
 	logInfo
 	logDefault
 )
+
+func (c Cmd) TermSize() (width int, height int) {
+
+	width, height, err := term.GetSize(int(os.Stdout.Fd()))
+	if err != nil {
+		return 150, 150
+	}
+
+	return width, height
+}
 
 func (c Cmd) Log(logtype logType, msg string) {
 	var s string

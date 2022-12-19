@@ -80,7 +80,7 @@ var statusData = map[Status]struct {
 	},
 }
 
-func (t Todo) render() string {
+func (t Todo) render(maxwidth int) string {
 	var icon string
 	var body string
 	data := statusData[t.status]
@@ -100,5 +100,12 @@ func (t Todo) render() string {
 		body = t.body
 	}
 
-	return fmt.Sprintf("%s %s\n", icon, body)
+	body = truncate(body, maxwidth)
+
+	return fmt.Sprintf("%s %s", icon, body)
+}
+
+func (t Todo) length() int {
+	iconAndSpaces := 3
+	return len(t.body) + iconAndSpaces
 }

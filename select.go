@@ -70,7 +70,7 @@ func (m selectModel) View() string {
 		if selected {
 			indicator = "→ "
 		}
-		choice := fmt.Sprintf("%s%s", indicator, todo.render())
+		choice := fmt.Sprintf("%s%s", indicator, todo.render(40))
 		doc.WriteString(choice)
 	}
 
