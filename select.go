@@ -13,6 +13,7 @@ type selectModel struct {
 	position  int
 	selection *Todo
 	err       error
+	termWidth int
 }
 
 func initialSelectModel(todos []*Todo) selectModel {
@@ -37,6 +38,9 @@ func (m selectModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.termWidth = msg.Width
+		return m, nil
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyDown:
@@ -70,7 +74,7 @@ func (m selectModel) View() string {
 		if selected {
 			indicator = "→ "
 		}
-		choice := fmt.Sprintf("%s%s", indicator, todo.render(40))
+		choice := fmt.Sprintf("%s%s\n", indicator, todo.render(m.termWidth-2, false))
 		doc.WriteString(choice)
 	}
 

@@ -10,8 +10,8 @@ type Status int
 
 const (
 	uncompletedStatus Status = iota
-	completedStatus
 	inProgressStatus
+	completedStatus
 )
 
 func (s Status) String() string {
@@ -26,14 +26,21 @@ func (s Status) String() string {
 		return "UNKNOWN"
 	}
 }
+func (s Status) next() Status {
+	return Status(clamp(0, int(s)+1, 2))
+}
+
+func (s Status) prev() Status {
+	return Status(clamp(0, int(s)-1, 2))
+}
 
 type Todo struct {
 	status Status
 	body   string
 }
 
-func newTodo(body string, status Status) Todo {
-	return Todo{
+func newTodo(body string, status Status) *Todo {
+	return &Todo{
 		status: status,
 		body:   body,
 	}
@@ -46,12 +53,14 @@ var (
 	mauve  = lg.Color("#cba6f7")
 	green  = lg.Color("#a6e3a1")
 	red    = lg.Color("#f38ba8")
+	white  = lg.Color("#ffffff")
 
-	dimText    = lg.NewStyle().Faint(true).Render
-	greenText  = lg.NewStyle().Foreground(green).Render
-	redText    = lg.NewStyle().Foreground(red).Render
-	blueText   = lg.NewStyle().Foreground(blue).Render
-	yellowText = lg.NewStyle().Foreground(yellow).Render
+	greenText    = lg.NewStyle().Foreground(green).Render
+	redText      = lg.NewStyle().Foreground(red).Render
+	blueText     = lg.NewStyle().Foreground(blue).Render
+	yellowText   = lg.NewStyle().Foreground(yellow).Render
+	selectedText = lg.NewStyle().Foreground(white).Bold(true).Render
+	dimText      = lg.NewStyle().Faint(true).Render
 )
 
 var statusData = map[Status]struct {
@@ -80,29 +89,30 @@ var statusData = map[Status]struct {
 	},
 }
 
-func (t Todo) render(maxwidth int) string {
+func (t Todo) render(maxwidth int, isSelected bool) string {
 	var icon string
-	var body string
 	data := statusData[t.status]
+	body := truncate(t.body, maxwidth-4)
 
 	switch t.status {
 	case uncompletedStatus:
-		body = t.body
 		icon = blueText(data.termIcon)
 	case inProgressStatus:
-		body = t.body
 		icon = yellowText(data.termIcon)
 	case completedStatus:
-		body = dimText(t.body)
+		body = dimText(body)
 		icon = greenText(data.termIcon)
 	default:
 		icon = ""
 		body = t.body
 	}
 
-	body = truncate(body, maxwidth)
+	if isSelected {
+		icon = redText("ᐅ")
+		body = selectedText(body)
+	}
 
-	return fmt.Sprintf("%s %s", icon, body)
+	return lg.NewStyle().Inline(true).Render(fmt.Sprintf("%s %s", icon, body))
 }
 
 func (t Todo) length() int {

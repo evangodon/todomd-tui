@@ -48,5 +48,5 @@ func (c Cmd) Log(logtype logType, msg string) {
 		s = msg
 	}
 
-	fmt.Println("\n" + s)
+	fmt.Println(s)
 }
