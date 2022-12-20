@@ -1,11 +1,11 @@
 # TODO
 
-- [ ] handle formatting of rendering strings, truncate long strings
 - [ ] Add j and k keys to select input
 - [ ] improve parser, handle badly formatted headers
-- [ ] create interactive mode that updates if file is updated
 
 # IN-PROGRESS
+
+- [ ] create interactive mode that updates if file is updated
 
 # DONE
 
@@ -14,3 +14,5 @@
 - [x] Log success message
 - [x] Create Start cmd
 - [x] Create Complete cmd
+- [x] handle formatting of rendering strings, truncate long strings
+
