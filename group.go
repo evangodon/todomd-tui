@@ -21,7 +21,7 @@ func newGroup(status Status) *Group {
 	return &Group{
 		status:   status,
 		items:    []*Todo{},
-		maxWidth: 10,
+		maxWidth: 100,
 	}
 }
 
@@ -58,12 +58,7 @@ func (g *Group) render() string {
 
 	for _, t := range g.items {
 		s := t.render(g.maxWidth)
-		out.WriteString("\n")
-		out.WriteString(s)
-	}
-
-	if len(g.items) == 0 {
-		out.WriteString(dimText("\n(none)"))
+		out.WriteString("\n" + s)
 	}
 
 	return listContainer(out.String())
@@ -87,11 +82,6 @@ func (g *Group) String() string {
 	}
 	s.WriteString(header)
 	s.WriteString("\n\n")
-
-	if len(g.items) == 0 {
-		s.WriteString("none")
-		return s.String()
-	}
 
 	for _, todo := range g.items {
 		line := fmt.Sprintf("%s %s\n", statusData[g.status].mdIcon, todo.body)

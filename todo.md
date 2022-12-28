@@ -1,11 +1,12 @@
 # TODO
 
 - [ ] Add j and k keys to select input
-- [ ] improve parser, handle badly formatted headers
+- [ ] A new one
 
 # IN-PROGRESS
 
 - [ ] create interactive mode that updates if file is updated
+- [ ] improve parser, handle badly formatted headers
 
 # DONE
 

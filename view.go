@@ -36,12 +36,14 @@ func (c Cmd) View() *cli.Command {
 
 			termWidth, _ := c.TermSize()
 			maxWidth := termWidth
+			totalNumGroups := len(renderedGroups)
 			if definedWidth > 0 {
 				maxWidth = definedWidth
 			}
 
-			gap := strings.Repeat(" ", 8)
-			ttlGapSpace := len(gap) * (len(renderedGroups) - 1)
+			gap := strings.Repeat(" ", 3)
+			// Total width used up by gaps
+			ttlGapSpace := len(gap) * (totalNumGroups - 1)
 			ttlRenderedWidth := func() int {
 				w := ttlGapSpace
 				for _, g := range renderedGroups {
@@ -53,12 +55,12 @@ func (c Cmd) View() *cli.Command {
 			over := ttlRenderedWidth > maxWidth
 
 			parts := []string{}
+			groupMaxWidth := termWidth / totalNumGroups
+			if over {
+				groupMaxWidth = maxWidth/totalNumGroups - ttlGapSpace/(totalNumGroups-1)
+			}
 			for i, g := range renderedGroups {
-				if over {
-					maxWidth = maxWidth/len(renderedGroups) - ttlGapSpace/len(renderedGroups)
-				}
-				maxWidth = max(maxWidth, 10)
-				g.maxWidth = maxWidth
+				g.maxWidth = groupMaxWidth
 				rendered := g.render()
 
 				spacebetween := gap
