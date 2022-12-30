@@ -14,6 +14,7 @@ func main() {
 		cmd.View(),
 		cmd.Start(),
 		cmd.Complete(),
+		cmd.Interactive(),
 	}
 
 	app := &cli.App{

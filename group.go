@@ -10,23 +10,26 @@ import (
 	lg "github.com/charmbracelet/lipgloss"
 )
 
-// A list of todos of the same type
+// A list of todos of the same type.
+// A group knows how to render itself in markdown or in the terminal
 type Group struct {
 	status   Status
-	items    []*Todo
+	items    []Todo
 	maxWidth int
+	selected int
 }
 
-func newGroup(status Status) *Group {
+func newGroup(status Status, items []Todo) *Group {
 	return &Group{
 		status:   status,
-		items:    []*Todo{},
+		items:    items,
 		maxWidth: 100,
+		selected: -1,
 	}
 }
 
 func (g *Group) addTodo(todo Todo) {
-	g.items = append(g.items, &todo)
+	g.items = append(g.items, todo)
 }
 
 func (g *Group) removeTodo(todo Todo) error {
@@ -43,7 +46,7 @@ func (g *Group) removeTodo(todo Todo) error {
 	return nil
 }
 
-var listContainer = lg.NewStyle().Padding(0, 1).Render
+var listContainer = lg.NewStyle().Padding(0, 1)
 
 func (g *Group) render() string {
 	out := strings.Builder{}
@@ -53,18 +56,19 @@ func (g *Group) render() string {
 
 	if len(g.items) == 0 {
 		out.WriteString(dimText("\n(none)"))
-		return out.String()
 	}
 
-	for _, t := range g.items {
-		s := t.render(g.maxWidth)
+	for i, t := range g.items {
+		s := t.render(g.maxWidth, i == g.selected)
+
 		out.WriteString("\n" + s)
 	}
 
-	return listContainer(out.String())
+	return listContainer.Width(g.maxWidth).
+		Render(out.String())
 }
 
-func (g *Group) String() string {
+func (g Group) String() string {
 	data := statusData[g.status]
 	s := strings.Builder{}
 	b := "#"
@@ -82,6 +86,9 @@ func (g *Group) String() string {
 	}
 	s.WriteString(header)
 	s.WriteString("\n\n")
+	if len(g.items) == 0 {
+		return s.String()
+	}
 
 	for _, todo := range g.items {
 		line := fmt.Sprintf("%s %s\n", statusData[g.status].mdIcon, todo.body)

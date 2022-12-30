@@ -21,7 +21,7 @@ func (cmd Cmd) Complete() *cli.Command {
 				return err
 			}
 
-			inProgressTodos := todosList.inProgress.items
+			inProgressTodos := todosList.filterByStatus(inProgressStatus)
 			if len(inProgressTodos) == 0 {
 				return cli.Exit("No todos in progress", 0)
 			}
@@ -39,7 +39,7 @@ func (cmd Cmd) Complete() *cli.Command {
 				return cli.Exit("", 0)
 			}
 
-			todosList.completeTodo(*todo)
+			todo.status = completedStatus
 			todosList.writeToFile()
 
 			msg := fmt.Sprintf("completed '%s'", todo.body)

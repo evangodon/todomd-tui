@@ -39,7 +39,7 @@ func (cmd Cmd) Add() *cli.Command {
 				return nil
 			}
 
-			todosList.uncompleted.addTodo(newTodo(todoName, uncompletedStatus))
+			todosList.addTodo(newTodo(todoName, uncompletedStatus))
 
 			err = todosList.writeToFile()
 			if err != nil {

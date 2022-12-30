@@ -20,7 +20,7 @@ func (cmd Cmd) Start() *cli.Command {
 				return err
 			}
 
-			uncompletedTodos := todosList.uncompleted.items
+			uncompletedTodos := todosList.filterByStatus(uncompletedStatus)
 			if len(uncompletedTodos) == 0 {
 				return cli.Exit("No unstarted todos", 0)
 			}
@@ -32,8 +32,8 @@ func (cmd Cmd) Start() *cli.Command {
 			}
 
 			todo := m.(selectModel).selection
+			todo.status = inProgressStatus
 
-			todosList.startTodo(*todo)
 			todosList.writeToFile()
 
 			msg := fmt.Sprintf("started '%s'", todo.body)
