@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -138,7 +139,9 @@ func (m model) View() string {
 	s := strings.Builder{}
 	s.WriteString(groups)
 	s.WriteString("\n")
-	s.WriteString(helpbar)
+	s.WriteString(
+		fmt.Sprintf("%s%s%s", helpbar, strings.Repeat(" ", 10), dimText(m.todosList.filename)),
+	)
 
 	return s.String()
 }

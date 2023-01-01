@@ -111,7 +111,7 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 
 		m.groups = updateGroups(m.todosList)
 		return m, func() tea.Msg {
-			nextX := clamp(0, m.position.x-1, maxY)
+			nextX := clamp(0, m.position.x-1, 2)
 			m.position.x = nextX
 			currGroup := m.activeGroup()
 

@@ -19,7 +19,7 @@ var (
 	boldText = lipgloss.NewStyle().Bold(true).Render
 )
 
-func renderGroups(groups []Group, t termSize, s Position) string {
+func renderGroups(groups []Group, t termSize, pos Position) string {
 	termWidth := t.width
 	totalNumGroups := len(groups)
 
@@ -42,8 +42,8 @@ func renderGroups(groups []Group, t termSize, s Position) string {
 	}
 	for i, g := range groups {
 		g.maxWidth = groupMaxWidth
-		if i == s.x {
-			g.selected = s.y
+		if i == pos.x {
+			g.selected = pos.y
 		}
 
 		spacebetween := gap

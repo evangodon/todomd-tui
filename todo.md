@@ -2,17 +2,19 @@
 
 - [ ] Add j and k keys to select input
 - [ ] handle badly formatted headers in markdown
-- [ ] Create better indicator for active column
 - [ ] Create sub Todos
 - [ ] add G and g keybindings
+- [ ] improve parser, handle badly formatted headers
+- [ ] Add "type" field, indicated by ##
 
 # IN-PROGRESS
 
-- [ ] create interactive mode that updates if file is updated
-- [ ] improve parser, handle badly formatted headers
+- [ ] add ability to add todo from TUI view
 
 # DONE
 
+- [x] Create better indicator for active column
+- [x] create interactive mode that updates if file is updated
 - [x] fix bug where moving right or left might create infinite loop
 - [x] Handle empty groups when moving right and left
 - [x] update style for selected todo

@@ -51,7 +51,8 @@ var listContainer = lg.NewStyle().Padding(0, 1)
 func (g *Group) render() string {
 	out := strings.Builder{}
 	status := Status(g.status)
-	out.WriteString(HeaderStyle(status))
+	header := formatHeader(status, g.selected >= 0)
+	out.WriteString(header)
 	out.WriteString("\n")
 
 	if len(g.items) == 0 {
@@ -99,8 +100,11 @@ func (g Group) String() string {
 	return s.String()
 }
 
-func HeaderStyle(status Status) string {
+func formatHeader(status Status, colActive bool) string {
 	data := statusData[status]
+	if colActive {
+		data.header = selectedText(data.header)
+	}
 
 	switch status {
 	case uncompletedStatus:
