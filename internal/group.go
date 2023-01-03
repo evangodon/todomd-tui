@@ -73,7 +73,7 @@ func (g *Group) Render() string {
 	out.WriteString("\n")
 
 	if len(g.items) == 0 {
-		out.WriteString(ui.DimText("\n(none)"))
+		out.WriteString(ui.DimText.Render("\n(none)"))
 	}
 
 	for i, t := range g.items {
@@ -120,7 +120,7 @@ func (g Group) String() string {
 func formatHeader(status Status, colActive bool) string {
 	data := statusData[status]
 	if colActive {
-		data.header = ui.SelectedText(data.header)
+		data.header = ui.SelectedText.Render(data.header)
 	}
 
 	switch status {

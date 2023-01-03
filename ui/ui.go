@@ -10,12 +10,12 @@ var (
 	red    = lg.Color("#f38ba8")
 	white  = lg.Color("#ffffff")
 
-	GreenText    = lg.NewStyle().Foreground(green).Render
-	RedText      = lg.NewStyle().Foreground(red).Render
-	BlueText     = lg.NewStyle().Foreground(blue).Render
-	YellowText   = lg.NewStyle().Foreground(yellow).Render
-	SelectedText = lg.NewStyle().Foreground(white).Bold(true).Render
-	DimText      = lg.NewStyle().Faint(true).Render
+	GreenText    = lg.NewStyle().Foreground(green)
+	RedText      = lg.NewStyle().Foreground(red)
+	BlueText     = lg.NewStyle().Foreground(blue)
+	YellowText   = lg.NewStyle().Foreground(yellow)
+	SelectedText = lg.NewStyle().Bold(true)
+	DimText      = lg.NewStyle().Faint(true)
 )
 
 var Color = struct {

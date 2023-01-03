@@ -159,7 +159,7 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 		// ADD TODO
 	case key.Matches(msg, keys.add):
 		m.textinput.enabled = true
-		m.textinput.input.Width = internal.Clamp(10, activeGroup.Width(), 50)
+		m.textinput.input.Width = internal.Clamp(10, activeGroup.Width()-4, 50)
 		return m, tea.Batch(textinput.Blink, m.textinput.input.Focus())
 
 		// HELP

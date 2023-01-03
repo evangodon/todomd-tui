@@ -87,26 +87,25 @@ var statusData = map[Status]struct {
 }
 
 func (t Todo) Render(maxwidth int, isSelected bool) string {
-	var icon string
+	var icon lg.Style
 	data := statusData[t.Status]
-	body := truncate(t.Body(), maxwidth-4)
+	body := lg.NewStyle().SetString(truncate(t.Body(), maxwidth-4))
 
 	switch t.Status {
 	case UncompletedStatus:
-		icon = ui.BlueText(data.termIcon)
+		icon = ui.BlueText.SetString(data.termIcon)
 	case InProgressStatus:
-		icon = ui.YellowText(data.termIcon)
+		icon = ui.YellowText.SetString(data.termIcon)
 	case CompletedStatus:
-		body = ui.DimText(body)
-		icon = ui.GreenText(data.termIcon)
+		body = body.Faint(true)
+		icon = ui.GreenText.SetString(data.termIcon)
 	default:
-		icon = ""
-		body = t.Body()
+		icon = lg.NewStyle()
 	}
 
 	if isSelected {
-		icon = ui.RedText("ᐅ")
-		body = ui.SelectedText(body)
+		icon = ui.RedText.Bold(true).SetString("ᐅ")
+		body = body.Bold(true)
 	}
 
 	return lg.NewStyle().Inline(true).Render(fmt.Sprintf("%s %s", icon, body))
