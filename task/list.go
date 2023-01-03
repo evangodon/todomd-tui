@@ -9,30 +9,30 @@ import (
 )
 
 type List struct {
-	items    []*Task
+	tasks    []*Task
 	filename string
 }
 
 func NewList(filename string) *List {
 	return &List{
-		items:    make([]*Task, 0),
+		tasks:    make([]*Task, 0),
 		filename: filename,
 	}
 }
 
-func (t List) Items() []*Task {
-	return t.items
+func (t List) Tasks() []*Task {
+	return t.tasks
 }
 
-func (t *List) AddTodo(todo *Task) {
-	t.items = append(t.items, todo)
+func (t *List) AddTask(task *Task) {
+	t.tasks = append(t.tasks, task)
 }
 
 func (t *List) FilterByStatus(status Status) []*Task {
 	items := make([]*Task, 0)
-	for _, todo := range t.items {
-		if todo.Status == status {
-			items = append(items, todo)
+	for _, task := range t.tasks {
+		if task.Status == status {
+			items = append(items, task)
 		}
 	}
 
@@ -41,9 +41,9 @@ func (t *List) FilterByStatus(status Status) []*Task {
 
 func (t *List) CreateGroup(status Status) Group {
 	items := make([]Task, 0)
-	for _, todo := range t.items {
-		if todo.Status == status {
-			items = append(items, *todo)
+	for _, task := range t.tasks {
+		if task.Status == status {
+			items = append(items, *task)
 		}
 	}
 
@@ -63,14 +63,14 @@ func (t *List) GroupByStatus() GroupsByStatus {
 		Completed:   *newGroup(CompletedStatus, []Task{}),
 	}
 
-	for _, todo := range t.items {
-		switch todo.Status {
+	for _, task := range t.tasks {
+		switch task.Status {
 		case UncompletedStatus:
-			groups.Uncompleted.addTodo(*todo)
+			groups.Uncompleted.addTask(*task)
 		case InProgressStatus:
-			groups.InProgress.addTodo(*todo)
+			groups.InProgress.addTask(*task)
 		case CompletedStatus:
-			groups.Completed.addTodo(*todo)
+			groups.Completed.addTask(*task)
 		}
 	}
 
@@ -83,7 +83,7 @@ func (td *List) ParseFile() error {
 		return fmt.Errorf("error opening file: %v", err)
 	}
 	scanner := bufio.NewScanner(f)
-	todos := make([]*Task, 0)
+	tasks := make([]*Task, 0)
 	var currentStatus Status
 
 	for scanner.Scan() {
@@ -106,11 +106,11 @@ func (td *List) ParseFile() error {
 		if matched := statusPattern.MatchString(line); matched {
 			body := line[6:]
 			body = strings.TrimSpace(body)
-			todos = append(todos, New(body, currentStatus))
+			tasks = append(tasks, New(body, currentStatus))
 		}
 	}
 
-	td.items = todos
+	td.tasks = tasks
 
 	return nil
 }

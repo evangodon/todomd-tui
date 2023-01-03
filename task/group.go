@@ -45,14 +45,14 @@ func (g Group) Status() Status {
 	return g.status
 }
 
-func (g *Group) addTodo(todo Task) {
-	g.items = append(g.items, todo)
+func (g *Group) addTask(task Task) {
+	g.items = append(g.items, task)
 }
 
-func (g *Group) removeTodo(todo Task) error {
+func (g *Group) removeTask(task Task) error {
 	n := len(g.items)
 	index := sort.Search(n, func(i int) bool {
-		return g.items[i].Body() == todo.Body()
+		return g.items[i].Body() == task.Body()
 	})
 
 	if index == n {
@@ -110,8 +110,8 @@ func (g Group) ToMarkdown() string {
 		return s.String()
 	}
 
-	for _, todo := range g.items {
-		line := fmt.Sprintf("%s %s\n", statusData[g.status].mdIcon, todo.Body())
+	for _, task := range g.items {
+		line := fmt.Sprintf("%s %s\n", statusData[g.status].mdIcon, task.Body())
 		s.WriteString(line)
 	}
 	s.WriteString("\n")

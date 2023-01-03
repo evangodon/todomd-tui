@@ -11,7 +11,7 @@ func TestList_ParseFile(t *testing.T) {
 	err := list.ParseFile()
 	assert.NoError(t, err)
 
-	assert.Equal(t, 16, len(list.items))
+	assert.Equal(t, 16, len(list.tasks))
 
 	groups := list.GroupByStatus()
 

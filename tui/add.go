@@ -18,7 +18,7 @@ func (m model) handleTextInputMsg(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.textinput.input.Blur()
 			todo := task.New(m.textinput.input.Value(), task.UncompletedStatus)
 			m.textinput.input.Reset()
-			m.todosList.AddTodo(todo)
+			m.todosList.AddTask(todo)
 			m.groups = updateGroups(m.todosList)
 			return m, nil
 		}

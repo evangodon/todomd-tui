@@ -112,7 +112,7 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 	// PREVIOUS STATUS
 	case key.Matches(msg, keys.prevStatus):
 		todo := activeGroup.Items()[m.position.Y]
-		for _, t := range m.todosList.Items() {
+		for _, t := range m.todosList.Tasks() {
 			if t.Body() == todo.Body() {
 				t.Status = t.Status.Prev()
 			}
@@ -136,7 +136,7 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 	// NEXT STATUS
 	case key.Matches(msg, keys.nextStatus):
 		todo := activeGroup.Items()[m.position.Y]
-		for _, t := range m.todosList.Items() {
+		for _, t := range m.todosList.Tasks() {
 			if t.Body() == todo.Body() {
 				t.Status = t.Status.Next()
 			}
