@@ -1,28 +1,41 @@
-package main
+package todoselect
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/evangodon/todo/internal"
 )
 
-type selectModel struct {
-	todos     []*Todo
+func New(todos []*internal.Todo) (*internal.Todo, error) {
+	p := tea.NewProgram(initialModel(todos))
+
+	m, err := p.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return m.(model).selection, m.(model).err
+}
+
+type model struct {
+	todos     []*internal.Todo
 	position  int
-	selection *Todo
+	selection *internal.Todo
 	err       error
 	termWidth int
 }
 
-func initialSelectModel(todos []*Todo) selectModel {
-	var selection *Todo
+func initialModel(todos []*internal.Todo) model {
+	var selection *internal.Todo
 	if len(todos) > 0 {
 		selection = todos[0]
 	}
 
-	return selectModel{
+	return model{
 		todos:     todos,
 		position:  0,
 		selection: selection,
@@ -30,11 +43,11 @@ func initialSelectModel(todos []*Todo) selectModel {
 	}
 }
 
-func (m selectModel) Init() tea.Cmd {
+func (m model) Init() tea.Cmd {
 	return nil
 }
 
-func (m selectModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
@@ -57,16 +70,12 @@ func (m selectModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyEnter, tea.KeyCtrlC, tea.KeyEsc:
 			return m, tea.Quit
 		}
-
-	case errMsg:
-		m.err = msg
-		return m, nil
 	}
 
 	return m, cmd
 }
 
-func (m selectModel) View() string {
+func (m model) View() string {
 	doc := strings.Builder{}
 	for i, todo := range m.todos {
 		selected := i == m.position
@@ -74,7 +83,7 @@ func (m selectModel) View() string {
 		if selected {
 			indicator = "→ "
 		}
-		choice := fmt.Sprintf("%s%s\n", indicator, todo.render(m.termWidth-2, false))
+		choice := fmt.Sprintf("%s%s\n", indicator, todo.Render(m.termWidth-2, false))
 		doc.WriteString(choice)
 	}
 

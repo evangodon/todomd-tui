@@ -1,9 +1,9 @@
-package main
+package cmd
 
 import (
-	"log"
-
-	tea "github.com/charmbracelet/bubbletea"
+	"github.com/evangodon/todo/components/input"
+	"github.com/evangodon/todo/internal"
+	"github.com/evangodon/todo/ui"
 	"github.com/urfave/cli/v2"
 )
 
@@ -21,31 +21,24 @@ func (cmd Cmd) Add() *cli.Command {
 		},
 		Action: func(ctx *cli.Context) error {
 			filename := ctx.String("file")
-			todosList := newTodos(filename)
-			if err := todosList.parseFile(); err != nil {
+			todosList := internal.NewTodos(filename)
+			if err := todosList.ParseFile(); err != nil {
 				return err
 			}
 
-			p := tea.NewProgram(initialTextinputModel())
-
-			m, err := p.Run()
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			todoName := m.(textinputModel).textInput.Value()
+			todoName := input.New()
 
 			if todoName == "" {
 				return nil
 			}
 
-			todosList.addTodo(newTodo(todoName, uncompletedStatus))
+			todo := internal.NewTodo(todoName, internal.UncompletedStatus)
+			todosList.AddTodo(todo)
 
-			err = todosList.writeToFile()
-			if err != nil {
+			if err := todosList.WriteToFile(); err != nil {
 				return err
 			}
-			cmd.Log(logSuccess, "Added: "+todoName)
+			ui.Log(ui.LogSuccess, "Added: "+todoName)
 
 			return nil
 		},

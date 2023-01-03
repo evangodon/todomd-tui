@@ -1,15 +1,11 @@
-package main
+package tui
 
 import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/evangodon/todo/internal"
 )
-
-type termSize struct {
-	width  int
-	height int
-}
 
 const (
 	gapWidth = 1
@@ -19,8 +15,8 @@ var (
 	boldText = lipgloss.NewStyle().Bold(true).Render
 )
 
-func renderGroups(groups []Group, t termSize, pos Position) string {
-	termWidth := t.width
+func RenderGroups(groups []internal.Group, win Window, pos Position, textinput TextInput) string {
+	termWidth := win.Width
 	totalNumGroups := len(groups)
 
 	gap := strings.Repeat(" ", gapWidth)
@@ -41,16 +37,25 @@ func renderGroups(groups []Group, t termSize, pos Position) string {
 		groupMaxWidth = termWidth/totalNumGroups - (ttlGapSpace+(appMargin*2))/(totalNumGroups-1)
 	}
 	for i, g := range groups {
-		g.maxWidth = groupMaxWidth
-		if i == pos.x {
-			g.selected = pos.y
+		g.SetMaxWidth(groupMaxWidth)
+		if i == pos.X {
+			g.SetSelected(pos.Y)
 		}
 
 		spacebetween := gap
 		if i%2 == 0 {
 			spacebetween = ""
 		}
-		parts = append(parts, spacebetween, g.render(), spacebetween)
+		s := strings.Builder{}
+		s.WriteString(g.Render())
+		if g.Status() == internal.UncompletedStatus && textinput.enabled {
+			s.WriteString("\n")
+			inputContainer := lipgloss.NewStyle().
+				Border(lipgloss.RoundedBorder())
+			out := inputContainer.Render(textinput.input.View())
+			s.WriteString(out)
+		}
+		parts = append(parts, spacebetween, s.String(), spacebetween)
 	}
 
 	return lipgloss.JoinHorizontal(lipgloss.Top, parts...)

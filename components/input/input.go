@@ -1,13 +1,25 @@
-package main
+package input
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-type textinputModel struct {
+func New() string {
+
+	p := tea.NewProgram(initialModel())
+	m, err := p.Run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return m.(model).textInput.Value()
+}
+
+type model struct {
 	textInput textinput.Model
 	err       error
 }
@@ -16,23 +28,23 @@ type (
 	errMsg error
 )
 
-func initialTextinputModel() textinputModel {
+func initialModel() model {
 	ti := textinput.New()
 	ti.Placeholder = ""
 	ti.Focus()
 	ti.CharLimit = 100
 
-	return textinputModel{
+	return model{
 		textInput: ti,
 		err:       nil,
 	}
 }
 
-func (m textinputModel) Init() tea.Cmd {
+func (m model) Init() tea.Cmd {
 	return textinput.Blink
 }
 
-func (m textinputModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
 	switch msg := msg.(type) {
@@ -51,7 +63,7 @@ func (m textinputModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m textinputModel) View() string {
+func (m model) View() string {
 	return fmt.Sprintf(
 		"New todo:\n%s\n\n%s",
 		m.textInput.View(),

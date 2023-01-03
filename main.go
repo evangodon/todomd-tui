@@ -3,11 +3,13 @@ package main
 import (
 	"os"
 
+	"github.com/evangodon/todo/cmd"
+	"github.com/evangodon/todo/ui"
 	"github.com/urfave/cli/v2"
 )
 
 func main() {
-	cmd := NewCmd()
+	cmd := cmd.New()
 
 	commands := []*cli.Command{
 		cmd.Add(),
@@ -31,7 +33,7 @@ func main() {
 	}
 
 	if err := app.Run(os.Args); err != nil {
-		cmd.Log(logError, err.Error())
+		ui.Log(ui.LogError, err.Error())
 		os.Exit(1)
 	}
 }

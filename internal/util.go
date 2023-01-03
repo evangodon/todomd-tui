@@ -1,4 +1,4 @@
-package main
+package internal
 
 func truncate(str string, maxwidth int) string {
 	if len(str) <= maxwidth {
@@ -23,6 +23,6 @@ func min(a, b int) int {
 	return b
 }
 
-func clamp(minVal int, val int, maxVal int) int {
+func Clamp(minVal int, val int, maxVal int) int {
 	return max(minVal, min(val, maxVal))
 }

@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"errors"
@@ -8,6 +8,7 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 	lg "github.com/charmbracelet/lipgloss"
+	"github.com/evangodon/todo/ui"
 )
 
 // A list of todos of the same type.
@@ -28,6 +29,22 @@ func newGroup(status Status, items []Todo) *Group {
 	}
 }
 
+func (g Group) Items() []Todo {
+	return g.items
+}
+
+func (g *Group) SetSelected(selected int) {
+	g.selected = selected
+}
+
+func (g *Group) SetMaxWidth(width int) {
+	g.maxWidth = width
+}
+
+func (g Group) Status() Status {
+	return g.status
+}
+
 func (g *Group) addTodo(todo Todo) {
 	g.items = append(g.items, todo)
 }
@@ -35,7 +52,7 @@ func (g *Group) addTodo(todo Todo) {
 func (g *Group) removeTodo(todo Todo) error {
 	n := len(g.items)
 	index := sort.Search(n, func(i int) bool {
-		return g.items[i].body == todo.body
+		return g.items[i].Body() == todo.Body()
 	})
 
 	if index == n {
@@ -48,7 +65,7 @@ func (g *Group) removeTodo(todo Todo) error {
 
 var listContainer = lg.NewStyle().Padding(0, 1)
 
-func (g *Group) render() string {
+func (g *Group) Render() string {
 	out := strings.Builder{}
 	status := Status(g.status)
 	header := formatHeader(status, g.selected >= 0)
@@ -56,11 +73,11 @@ func (g *Group) render() string {
 	out.WriteString("\n")
 
 	if len(g.items) == 0 {
-		out.WriteString(dimText("\n(none)"))
+		out.WriteString(ui.DimText("\n(none)"))
 	}
 
 	for i, t := range g.items {
-		s := t.render(g.maxWidth, i == g.selected)
+		s := t.Render(g.maxWidth, i == g.selected)
 
 		out.WriteString("\n" + s)
 	}
@@ -76,11 +93,11 @@ func (g Group) String() string {
 	var header string
 
 	switch g.status {
-	case uncompletedStatus:
+	case UncompletedStatus:
 		header = fmt.Sprintf("%s %s", b, data.header)
-	case inProgressStatus:
+	case InProgressStatus:
 		header = fmt.Sprintf("%s %s", b, data.header)
-	case completedStatus:
+	case CompletedStatus:
 		header = fmt.Sprintf("%s %s", b, data.header)
 	default:
 		return "UNKNOWN"
@@ -92,7 +109,7 @@ func (g Group) String() string {
 	}
 
 	for _, todo := range g.items {
-		line := fmt.Sprintf("%s %s\n", statusData[g.status].mdIcon, todo.body)
+		line := fmt.Sprintf("%s %s\n", statusData[g.status].mdIcon, todo.Body())
 		s.WriteString(line)
 	}
 	s.WriteString("\n")
@@ -103,15 +120,15 @@ func (g Group) String() string {
 func formatHeader(status Status, colActive bool) string {
 	data := statusData[status]
 	if colActive {
-		data.header = selectedText(data.header)
+		data.header = ui.SelectedText(data.header)
 	}
 
 	switch status {
-	case uncompletedStatus:
+	case UncompletedStatus:
 		return fmt.Sprintf("%s %s", data.termHeaderBlock, data.header)
-	case inProgressStatus:
+	case InProgressStatus:
 		return fmt.Sprintf("%s %s", data.termHeaderBlock, data.header)
-	case completedStatus:
+	case CompletedStatus:
 		return fmt.Sprintf("%s %s", data.termHeaderBlock, data.header)
 	default:
 		return "UNKNOWN"
@@ -119,5 +136,5 @@ func formatHeader(status Status, colActive bool) string {
 }
 
 func (g *Group) Width() int {
-	return lipgloss.Width(g.render())
+	return lipgloss.Width(g.Render())
 }
