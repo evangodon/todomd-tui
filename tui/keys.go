@@ -4,7 +4,7 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/evangodon/todo/internal"
+	"github.com/evangodon/todomd/task"
 )
 
 type keyMap struct {
@@ -82,32 +82,32 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 	switch {
 	// LEFT
 	case key.Matches(msg, keys.left):
-		m.position.X = internal.Clamp(0, m.position.X-1, 2)
+		m.position.X = task.Clamp(0, m.position.X-1, 2)
 		activeGroup = m.activeGroup()
 		items := activeGroup.Items()
 		maxY := len(items) - 1
 		if len(items) == 0 && m.position.X > 0 {
 			return m, newKeyMsg("h")
 		}
-		m.position.Y = internal.Clamp(0, m.position.Y, maxY)
+		m.position.Y = task.Clamp(0, m.position.Y, maxY)
 		return m, nil
 	// RIGHT
 	case key.Matches(msg, keys.right):
-		m.position.X = internal.Clamp(0, m.position.X+1, 2)
+		m.position.X = task.Clamp(0, m.position.X+1, 2)
 		activeGroup = m.activeGroup()
 		maxY := len(activeGroup.Items()) - 1
 		if len(activeGroup.Items()) == 0 && m.position.X < 2 {
 			return m, newKeyMsg("l")
 		}
-		m.position.Y = internal.Clamp(0, m.position.Y, maxY)
+		m.position.Y = task.Clamp(0, m.position.Y, maxY)
 		return m, nil
 	// UP
 	case key.Matches(msg, keys.up):
-		m.position.Y = internal.Clamp(0, m.position.Y-1, maxY)
+		m.position.Y = task.Clamp(0, m.position.Y-1, maxY)
 		return m, nil
 	// DOWN
 	case key.Matches(msg, keys.down):
-		m.position.Y = internal.Clamp(0, m.position.Y+1, maxY)
+		m.position.Y = task.Clamp(0, m.position.Y+1, maxY)
 		return m, nil
 	// PREVIOUS STATUS
 	case key.Matches(msg, keys.prevStatus):
@@ -120,7 +120,7 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 
 		m.groups = updateGroups(m.todosList)
 		return m, func() tea.Msg {
-			nextX := internal.Clamp(0, m.position.X-1, 2)
+			nextX := task.Clamp(0, m.position.X-1, 2)
 			m.position.X = nextX
 			currGroup := m.activeGroup()
 
@@ -144,7 +144,7 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 
 		m.groups = updateGroups(m.todosList)
 		return m, func() tea.Msg {
-			nextX := internal.Clamp(0, m.position.X+1, 2)
+			nextX := task.Clamp(0, m.position.X+1, 2)
 			m.position.X = nextX
 			currGroup := m.activeGroup()
 			for i, t := range currGroup.Items() {
@@ -159,7 +159,7 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 		// ADD TODO
 	case key.Matches(msg, keys.add):
 		m.textinput.enabled = true
-		m.textinput.input.Width = internal.Clamp(10, activeGroup.Width()-4, 50)
+		m.textinput.input.Width = task.Clamp(10, activeGroup.Width()-4, 50)
 		return m, tea.Batch(textinput.Blink, m.textinput.input.Focus())
 
 		// HELP

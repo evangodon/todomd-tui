@@ -7,11 +7,11 @@ import (
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/evangodon/todo/internal"
+	"github.com/evangodon/todomd/task"
 )
 
-func New(todos []*internal.Todo) (*internal.Todo, error) {
-	p := tea.NewProgram(initialModel(todos))
+func New(tasks []*task.Task) (*task.Task, error) {
+	p := tea.NewProgram(initialModel(tasks))
 
 	m, err := p.Run()
 	if err != nil {
@@ -22,21 +22,21 @@ func New(todos []*internal.Todo) (*internal.Todo, error) {
 }
 
 type model struct {
-	todos     []*internal.Todo
+	tasks     []*task.Task
 	position  int
-	selection *internal.Todo
+	selection *task.Task
 	err       error
 	termWidth int
 }
 
-func initialModel(todos []*internal.Todo) model {
-	var selection *internal.Todo
-	if len(todos) > 0 {
-		selection = todos[0]
+func initialModel(tasks []*task.Task) model {
+	var selection *task.Task
+	if len(tasks) > 0 {
+		selection = tasks[0]
 	}
 
 	return model{
-		todos:     todos,
+		tasks:     tasks,
 		position:  0,
 		selection: selection,
 		err:       nil,
@@ -57,15 +57,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyDown:
-			m.position = (m.position + 1) % len(m.todos)
-			m.selection = m.todos[m.position]
+			m.position = (m.position + 1) % len(m.tasks)
+			m.selection = m.tasks[m.position]
 			return m, nil
 		case tea.KeyUp:
 			m.position--
 			if m.position < 0 {
-				m.position = len(m.todos) - 1
+				m.position = len(m.tasks) - 1
 			}
-			m.selection = m.todos[m.position]
+			m.selection = m.tasks[m.position]
 			return m, nil
 		case tea.KeyEnter, tea.KeyCtrlC, tea.KeyEsc:
 			return m, tea.Quit
@@ -77,13 +77,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	doc := strings.Builder{}
-	for i, todo := range m.todos {
+	for i, task := range m.tasks {
 		selected := i == m.position
 		indicator := "  "
 		if selected {
 			indicator = "→ "
 		}
-		choice := fmt.Sprintf("%s%s\n", indicator, todo.Render(m.termWidth-2, false))
+		choice := fmt.Sprintf("%s%s\n", indicator, task.Render(m.termWidth-2, false))
 		doc.WriteString(choice)
 	}
 

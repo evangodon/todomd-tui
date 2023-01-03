@@ -2,7 +2,7 @@ package cmd
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/evangodon/todo/tui"
+	"github.com/evangodon/todomd/tui"
 	"github.com/urfave/cli/v2"
 )
 

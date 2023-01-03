@@ -1,10 +1,10 @@
-package internal
+package task
 
 import (
 	"fmt"
 
 	lg "github.com/charmbracelet/lipgloss"
-	"github.com/evangodon/todo/ui"
+	"github.com/evangodon/todomd/ui"
 )
 
 type Status int
@@ -35,23 +35,23 @@ func (s Status) Prev() Status {
 	return Status(Clamp(0, int(s)-1, 2))
 }
 
-type Todo struct {
+type Task struct {
 	Status Status
 	body   string
 }
 
-func NewTodo(body string, status Status) *Todo {
-	return &Todo{
+func New(body string, status Status) *Task {
+	return &Task{
 		Status: status,
 		body:   body,
 	}
 }
 
-func (t *Todo) SetStatus(status Status) {
+func (t *Task) SetStatus(status Status) {
 	t.Status = status
 }
 
-func (t Todo) Body() string {
+func (t Task) Body() string {
 	return t.body
 }
 
@@ -86,7 +86,7 @@ var statusData = map[Status]struct {
 	},
 }
 
-func (t Todo) Render(maxwidth int, isSelected bool) string {
+func (t Task) Render(maxwidth int, isSelected bool) string {
 	var icon lg.Style
 	data := statusData[t.Status]
 	body := lg.NewStyle().SetString(truncate(t.Body(), maxwidth-4))
@@ -111,7 +111,7 @@ func (t Todo) Render(maxwidth int, isSelected bool) string {
 	return lg.NewStyle().Inline(true).Render(fmt.Sprintf("%s %s", icon, body))
 }
 
-func (t Todo) length() int {
+func (t Task) length() int {
 	iconAndSpaces := 3
 	return len(t.Body()) + iconAndSpaces
 }

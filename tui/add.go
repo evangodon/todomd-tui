@@ -2,7 +2,7 @@ package tui
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/evangodon/todo/internal"
+	"github.com/evangodon/todomd/task"
 )
 
 func (m model) handleTextInputMsg(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -16,7 +16,7 @@ func (m model) handleTextInputMsg(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			m.textinput.enabled = false
 			m.textinput.input.Blur()
-			todo := internal.NewTodo(m.textinput.input.Value(), internal.UncompletedStatus)
+			todo := task.New(m.textinput.input.Value(), task.UncompletedStatus)
 			m.textinput.input.Reset()
 			m.todosList.AddTodo(todo)
 			m.groups = updateGroups(m.todosList)

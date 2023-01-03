@@ -3,9 +3,9 @@ package cmd
 import (
 	"fmt"
 
-	todoselect "github.com/evangodon/todo/components/select"
-	"github.com/evangodon/todo/internal"
-	"github.com/evangodon/todo/ui"
+	todoselect "github.com/evangodon/todomd/components/select"
+	"github.com/evangodon/todomd/task"
+	"github.com/evangodon/todomd/ui"
 	"github.com/urfave/cli/v2"
 )
 
@@ -16,12 +16,12 @@ func (cmd Cmd) Start() *cli.Command {
 		Usage:   "start a todo",
 		Action: func(ctx *cli.Context) error {
 			filename := ctx.String("file")
-			todosList := internal.NewTodos(filename)
+			todosList := task.NewList(filename)
 			if err := todosList.ParseFile(); err != nil {
 				return err
 			}
 
-			uncompletedTodos := todosList.FilterByStatus(internal.UncompletedStatus)
+			uncompletedTodos := todosList.FilterByStatus(task.UncompletedStatus)
 			if len(uncompletedTodos) == 0 {
 				return cli.Exit("No unstarted todos", 0)
 			}
@@ -31,7 +31,7 @@ func (cmd Cmd) Start() *cli.Command {
 				return err
 			}
 
-			todo.Status = internal.InProgressStatus
+			todo.Status = task.InProgressStatus
 
 			todosList.WriteToFile()
 

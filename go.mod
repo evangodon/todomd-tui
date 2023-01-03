@@ -1,4 +1,4 @@
-module github.com/evangodon/todo
+module github.com/evangodon/todomd
 
 go 1.18
 

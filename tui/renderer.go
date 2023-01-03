@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/evangodon/todo/internal"
+	"github.com/evangodon/todomd/task"
 )
 
 const (
@@ -15,7 +15,7 @@ var (
 	boldText = lipgloss.NewStyle().Bold(true).Render
 )
 
-func RenderGroups(groups []internal.Group, win Window, pos Position, textinput TextInput) string {
+func RenderGroups(groups []task.Group, win Window, pos Position, textinput TextInput) string {
 	termWidth := win.Width
 	totalNumGroups := len(groups)
 
@@ -48,7 +48,7 @@ func RenderGroups(groups []internal.Group, win Window, pos Position, textinput T
 		}
 		s := strings.Builder{}
 		s.WriteString(g.Render())
-		if g.Status() == internal.UncompletedStatus && textinput.enabled {
+		if g.Status() == task.UncompletedStatus && textinput.enabled {
 			s.WriteString("\n")
 			inputContainer := lipgloss.NewStyle().
 				Border(lipgloss.RoundedBorder())

@@ -1,4 +1,4 @@
-package internal
+package task
 
 func truncate(str string, maxwidth int) string {
 	if len(str) <= maxwidth {

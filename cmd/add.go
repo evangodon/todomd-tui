@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"github.com/evangodon/todo/components/input"
-	"github.com/evangodon/todo/internal"
-	"github.com/evangodon/todo/ui"
+	"github.com/evangodon/todomd/components/input"
+	"github.com/evangodon/todomd/task"
+	"github.com/evangodon/todomd/ui"
 	"github.com/urfave/cli/v2"
 )
 
@@ -21,7 +21,7 @@ func (cmd Cmd) Add() *cli.Command {
 		},
 		Action: func(ctx *cli.Context) error {
 			filename := ctx.String("file")
-			todosList := internal.NewTodos(filename)
+			todosList := task.NewList(filename)
 			if err := todosList.ParseFile(); err != nil {
 				return err
 			}
@@ -32,7 +32,7 @@ func (cmd Cmd) Add() *cli.Command {
 				return nil
 			}
 
-			todo := internal.NewTodo(todoName, internal.UncompletedStatus)
+			todo := task.New(todoName, task.UncompletedStatus)
 			todosList.AddTodo(todo)
 
 			if err := todosList.WriteToFile(); err != nil {

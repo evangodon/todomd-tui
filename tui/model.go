@@ -7,7 +7,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/evangodon/todo/internal"
+	"github.com/evangodon/todomd/task"
 )
 
 type Window struct {
@@ -26,17 +26,17 @@ type TextInput struct {
 }
 
 type model struct {
-	todosList *internal.Todos
+	todosList *task.List
 	window    Window
 	position  Position
-	groups    internal.GroupsByStatus
+	groups    task.GroupsByStatus
 	help      help.Model
 	err       error
 	textinput TextInput
 }
 
 func NewInteractiveModel(file string) model {
-	list := internal.NewTodos(file)
+	list := task.NewList(file)
 	return model{
 		todosList: list,
 		window:    Window{Width: 0, Height: 0},
@@ -51,7 +51,7 @@ func NewInteractiveModel(file string) model {
 	}
 }
 
-func updateGroups(todos *internal.Todos) internal.GroupsByStatus {
+func updateGroups(todos *task.List) task.GroupsByStatus {
 	return todos.GroupByStatus()
 }
 
@@ -67,8 +67,8 @@ func (m model) Init() tea.Cmd {
 	}
 }
 
-func (m model) activeGroup() internal.Group {
-	group := map[int]internal.Group{
+func (m model) activeGroup() task.Group {
+	group := map[int]task.Group{
 		0: m.groups.Uncompleted,
 		1: m.groups.InProgress,
 		2: m.groups.Completed,
@@ -107,7 +107,7 @@ func (m model) View() string {
 	if m.err != nil {
 		return m.err.Error()
 	}
-	groups := RenderGroups([]internal.Group{
+	groups := RenderGroups([]task.Group{
 		m.groups.Uncompleted,
 		m.groups.InProgress,
 		m.groups.Completed,

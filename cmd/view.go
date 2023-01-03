@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"github.com/charmbracelet/lipgloss"
-	"github.com/evangodon/todo/internal"
-	"github.com/evangodon/todo/tui"
-	"github.com/evangodon/todo/ui"
+	"github.com/evangodon/todomd/task"
+	"github.com/evangodon/todomd/tui"
+	"github.com/evangodon/todomd/ui"
 	"github.com/urfave/cli/v2"
 )
 
@@ -23,16 +23,16 @@ func (c Cmd) View() *cli.Command {
 		Action: func(ctx *cli.Context) error {
 			file := ctx.String("file")
 
-			todosList := internal.NewTodos(file)
+			todosList := task.NewList(file)
 			if err := todosList.ParseFile(); err != nil {
 				return err
 			}
 			println(lipgloss.HasDarkBackground())
 
-			renderedGroups := []internal.Group{
-				todosList.CreateGroup(internal.UncompletedStatus),
-				todosList.CreateGroup(internal.InProgressStatus),
-				todosList.CreateGroup(internal.CompletedStatus),
+			renderedGroups := []task.Group{
+				todosList.CreateGroup(task.UncompletedStatus),
+				todosList.CreateGroup(task.InProgressStatus),
+				todosList.CreateGroup(task.CompletedStatus),
 			}
 
 			termWidth, termHeight := c.TermSize()

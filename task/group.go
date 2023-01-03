@@ -1,4 +1,4 @@
-package internal
+package task
 
 import (
 	"errors"
@@ -8,19 +8,19 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 	lg "github.com/charmbracelet/lipgloss"
-	"github.com/evangodon/todo/ui"
+	"github.com/evangodon/todomd/ui"
 )
 
 // A list of todos of the same type.
 // A group knows how to render itself in markdown or in the terminal
 type Group struct {
 	status   Status
-	items    []Todo
+	items    []Task
 	maxWidth int
 	selected int
 }
 
-func newGroup(status Status, items []Todo) *Group {
+func newGroup(status Status, items []Task) *Group {
 	return &Group{
 		status:   status,
 		items:    items,
@@ -29,7 +29,7 @@ func newGroup(status Status, items []Todo) *Group {
 	}
 }
 
-func (g Group) Items() []Todo {
+func (g Group) Items() []Task {
 	return g.items
 }
 
@@ -45,11 +45,11 @@ func (g Group) Status() Status {
 	return g.status
 }
 
-func (g *Group) addTodo(todo Todo) {
+func (g *Group) addTodo(todo Task) {
 	g.items = append(g.items, todo)
 }
 
-func (g *Group) removeTodo(todo Todo) error {
+func (g *Group) removeTodo(todo Task) error {
 	n := len(g.items)
 	index := sort.Search(n, func(i int) bool {
 		return g.items[i].Body() == todo.Body()

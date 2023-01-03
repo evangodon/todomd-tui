@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/evangodon/todo/cmd"
-	"github.com/evangodon/todo/ui"
+	"github.com/evangodon/todomd/cmd"
+	"github.com/evangodon/todomd/ui"
 	"github.com/urfave/cli/v2"
 )
 

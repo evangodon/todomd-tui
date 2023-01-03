@@ -1,4 +1,4 @@
-package internal
+package task
 
 import (
 	"bufio"
@@ -8,28 +8,28 @@ import (
 	"strings"
 )
 
-type Todos struct {
-	items    []*Todo
+type List struct {
+	items    []*Task
 	filename string
 }
 
-func NewTodos(filename string) *Todos {
-	return &Todos{
-		items:    make([]*Todo, 0),
+func NewList(filename string) *List {
+	return &List{
+		items:    make([]*Task, 0),
 		filename: filename,
 	}
 }
 
-func (t Todos) Items() []*Todo {
+func (t List) Items() []*Task {
 	return t.items
 }
 
-func (t *Todos) AddTodo(todo *Todo) {
+func (t *List) AddTodo(todo *Task) {
 	t.items = append(t.items, todo)
 }
 
-func (t *Todos) FilterByStatus(status Status) []*Todo {
-	items := make([]*Todo, 0)
+func (t *List) FilterByStatus(status Status) []*Task {
+	items := make([]*Task, 0)
 	for _, todo := range t.items {
 		if todo.Status == status {
 			items = append(items, todo)
@@ -39,8 +39,8 @@ func (t *Todos) FilterByStatus(status Status) []*Todo {
 	return items
 }
 
-func (t *Todos) CreateGroup(status Status) Group {
-	items := make([]Todo, 0)
+func (t *List) CreateGroup(status Status) Group {
+	items := make([]Task, 0)
 	for _, todo := range t.items {
 		if todo.Status == status {
 			items = append(items, *todo)
@@ -56,11 +56,11 @@ type GroupsByStatus struct {
 	Completed   Group
 }
 
-func (t *Todos) GroupByStatus() GroupsByStatus {
+func (t *List) GroupByStatus() GroupsByStatus {
 	groups := GroupsByStatus{
-		Uncompleted: *newGroup(UncompletedStatus, []Todo{}),
-		InProgress:  *newGroup(InProgressStatus, []Todo{}),
-		Completed:   *newGroup(CompletedStatus, []Todo{}),
+		Uncompleted: *newGroup(UncompletedStatus, []Task{}),
+		InProgress:  *newGroup(InProgressStatus, []Task{}),
+		Completed:   *newGroup(CompletedStatus, []Task{}),
 	}
 
 	for _, todo := range t.items {
@@ -77,13 +77,13 @@ func (t *Todos) GroupByStatus() GroupsByStatus {
 	return groups
 }
 
-func (td *Todos) ParseFile() error {
+func (td *List) ParseFile() error {
 	f, err := os.OpenFile(td.filename, os.O_RDWR, 0777)
 	if err != nil {
 		return fmt.Errorf("error opening file: %v", err)
 	}
 	scanner := bufio.NewScanner(f)
-	todos := make([]*Todo, 0)
+	todos := make([]*Task, 0)
 	var currentStatus Status
 
 	for scanner.Scan() {
@@ -106,7 +106,7 @@ func (td *Todos) ParseFile() error {
 		if matched := statusPattern.MatchString(line); matched {
 			body := line[6:]
 			body = strings.TrimSpace(body)
-			todos = append(todos, NewTodo(body, currentStatus))
+			todos = append(todos, New(body, currentStatus))
 		}
 	}
 
@@ -115,7 +115,7 @@ func (td *Todos) ParseFile() error {
 	return nil
 }
 
-func (td *Todos) WriteToFile() error {
+func (td *List) WriteToFile() error {
 	update := strings.Builder{}
 	groupsByStatus := td.GroupByStatus()
 
