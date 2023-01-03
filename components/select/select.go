@@ -83,7 +83,8 @@ func (m model) View() string {
 		if selected {
 			indicator = "→ "
 		}
-		choice := fmt.Sprintf("%s%s\n", indicator, task.Render(m.termWidth-2, false))
+		task.SetMaxWidth(m.termWidth - 2)
+		choice := fmt.Sprintf("%s%s\n", indicator, task.Render())
 		doc.WriteString(choice)
 	}
 

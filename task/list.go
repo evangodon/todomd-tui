@@ -119,13 +119,13 @@ func (td *List) WriteToFile() error {
 	update := strings.Builder{}
 	groupsByStatus := td.GroupByStatus()
 
-	if _, err := update.WriteString(groupsByStatus.Uncompleted.String()); err != nil {
+	if _, err := update.WriteString(groupsByStatus.Uncompleted.ToMarkdown()); err != nil {
 		return err
 	}
-	if _, err := update.WriteString(groupsByStatus.InProgress.String()); err != nil {
+	if _, err := update.WriteString(groupsByStatus.InProgress.ToMarkdown()); err != nil {
 		return err
 	}
-	if _, err := update.WriteString(groupsByStatus.Completed.String()); err != nil {
+	if _, err := update.WriteString(groupsByStatus.Completed.ToMarkdown()); err != nil {
 		return err
 	}
 

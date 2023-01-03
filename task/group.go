@@ -77,7 +77,9 @@ func (g *Group) Render() string {
 	}
 
 	for i, t := range g.items {
-		s := t.Render(g.maxWidth, i == g.selected)
+		t.SetMaxWidth(g.maxWidth)
+		t.SetIsSelected(i == g.selected)
+		s := t.Render()
 
 		out.WriteString("\n" + s)
 	}
@@ -86,7 +88,7 @@ func (g *Group) Render() string {
 		Render(out.String())
 }
 
-func (g Group) String() string {
+func (g Group) ToMarkdown() string {
 	data := statusData[g.status]
 	s := strings.Builder{}
 	b := "#"

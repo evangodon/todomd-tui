@@ -7,37 +7,11 @@ import (
 	"github.com/evangodon/todomd/ui"
 )
 
-type Status int
-
-const (
-	UncompletedStatus Status = iota
-	InProgressStatus
-	CompletedStatus
-)
-
-func (s Status) String() string {
-	switch s {
-	case UncompletedStatus:
-		return "TODO"
-	case InProgressStatus:
-		return "IN-PROGRESS"
-	case CompletedStatus:
-		return "DONE"
-	default:
-		return "UNKNOWN"
-	}
-}
-func (s Status) Next() Status {
-	return Status(Clamp(0, int(s)+1, 2))
-}
-
-func (s Status) Prev() Status {
-	return Status(Clamp(0, int(s)-1, 2))
-}
-
 type Task struct {
-	Status Status
-	body   string
+	Status     Status
+	body       string
+	maxWidth   int
+	isSelected bool
 }
 
 func New(body string, status Status) *Task {
@@ -49,6 +23,14 @@ func New(body string, status Status) *Task {
 
 func (t *Task) SetStatus(status Status) {
 	t.Status = status
+}
+
+func (t *Task) SetMaxWidth(w int) {
+	t.maxWidth = w
+}
+
+func (t *Task) SetIsSelected(s bool) {
+	t.isSelected = s
 }
 
 func (t Task) Body() string {
@@ -86,10 +68,10 @@ var statusData = map[Status]struct {
 	},
 }
 
-func (t Task) Render(maxwidth int, isSelected bool) string {
+func (t Task) Render() string {
 	var icon lg.Style
 	data := statusData[t.Status]
-	body := lg.NewStyle().SetString(truncate(t.Body(), maxwidth-4))
+	body := lg.NewStyle().SetString(truncate(t.Body(), t.maxWidth-2))
 
 	switch t.Status {
 	case UncompletedStatus:
@@ -103,7 +85,7 @@ func (t Task) Render(maxwidth int, isSelected bool) string {
 		icon = lg.NewStyle()
 	}
 
-	if isSelected {
+	if t.isSelected {
 		icon = ui.RedText.Bold(true).SetString("ᐅ")
 		body = body.Bold(true)
 	}

@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/charmbracelet/lipgloss"
 	"github.com/evangodon/todomd/task"
 	"github.com/evangodon/todomd/tui"
 	"github.com/evangodon/todomd/ui"
@@ -27,7 +26,6 @@ func (c Cmd) View() *cli.Command {
 			if err := todosList.ParseFile(); err != nil {
 				return err
 			}
-			println(lipgloss.HasDarkBackground())
 
 			renderedGroups := []task.Group{
 				todosList.CreateGroup(task.UncompletedStatus),

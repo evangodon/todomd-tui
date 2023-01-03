@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -8,6 +9,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/evangodon/todomd/task"
+	"github.com/evangodon/todomd/ui"
 )
 
 type Window struct {
@@ -85,7 +87,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case todofileRead:
 		if msg.err != nil {
 			m.err = msg.err
-			return m, tea.Quit
+			return m, nil
 		}
 		m.groups = m.todosList.GroupByStatus()
 		return m, nil
@@ -105,7 +107,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	if m.err != nil {
-		return m.err.Error()
+		header := ui.RedText.SetString("Error")
+		return fmt.Sprintf("%s\n%s\n%s", header, m.err.Error(), "Press q to quit")
 	}
 	groups := RenderGroups([]task.Group{
 		m.groups.Uncompleted,
