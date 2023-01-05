@@ -26,7 +26,7 @@ func TestTask_Render(t *testing.T) {
 	for _, tt := range tests {
 		tt.task.SetMaxWidth(tt.maxWidth)
 		out := tt.task.Render()
-		assert.LessOrEqual(t, tt.maxWidth, lipgloss.Width(out))
+		assert.GreaterOrEqual(t, tt.maxWidth, lipgloss.Width(out))
 	}
 
 }

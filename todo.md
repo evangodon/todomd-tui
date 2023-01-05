@@ -1,6 +1,5 @@
 # TODO
 
-- [ ] How to rename package easily?
 - [ ] Add j and k keys to select input
 - [ ] handle badly formatted headers in markdown
 - [ ] Create sub Todos
@@ -12,6 +11,7 @@
 
 # DONE
 
+- [x] How to rename package easily?
 - [x] add ability to add todo from TUI view
 - [x] Create better indicator for active column
 - [x] create interactive mode that updates if file is updated

@@ -71,7 +71,7 @@ var statusData = map[Status]struct {
 func (t Task) Render() string {
 	var icon lg.Style
 	data := statusData[t.Status]
-	body := lg.NewStyle().SetString(truncate(t.Body(), t.maxWidth-2))
+	body := lg.NewStyle().SetString(truncate(t.Body(), t.maxWidth-4))
 
 	switch t.Status {
 	case UncompletedStatus:

@@ -124,7 +124,7 @@ func (m model) View() string {
 	s := strings.Builder{}
 	s.WriteString(groups)
 	s.WriteString("\n")
-	s.WriteString(helpbar)
+	s.WriteString(" " + helpbar)
 
 	return s.String()
 }

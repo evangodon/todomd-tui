@@ -55,7 +55,7 @@ var keys = keyMap{
 	),
 	help: key.NewBinding(
 		key.WithKeys("?"),
-		key.WithHelp("?", "toggle help"),
+		key.WithHelp("?", "help"),
 	),
 	quit: key.NewBinding(
 		key.WithKeys("q", "ctrl+c"),
@@ -64,10 +64,11 @@ var keys = keyMap{
 }
 
 func (k keyMap) ShortHelp() []key.Binding {
-	return []key.Binding{k.movement, k.add, k.nextStatus, k.prevStatus, k.help, k.quit}
+	return []key.Binding{k.help, k.quit}
 }
 
 func (k keyMap) FullHelp() [][]key.Binding {
+	k.help.SetHelp("?", "Close help")
 	return [][]key.Binding{
 		{k.movement, k.add},
 		{k.nextStatus, k.prevStatus},
