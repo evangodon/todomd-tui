@@ -16,7 +16,7 @@ func (m model) handleTextInputMsg(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			m.textinput.enabled = false
 			m.textinput.input.Blur()
-			todo := task.New(m.textinput.input.Value(), task.UncompletedStatus)
+			todo := task.New(m.textinput.input.Value(), task.UncompletedStatus, nil)
 			m.textinput.input.Reset()
 			m.todosList.AddTask(todo)
 			m.groups = updateGroups(m.todosList)

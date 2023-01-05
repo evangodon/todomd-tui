@@ -78,14 +78,14 @@ func (k keyMap) FullHelp() [][]key.Binding {
 
 func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 	activeGroup := m.activeGroup()
-	maxY := len(activeGroup.Items()) - 1
+	maxY := len(activeGroup.Tasks()) - 1
 
 	switch {
 	// LEFT
 	case key.Matches(msg, keys.left):
 		m.position.X = task.Clamp(0, m.position.X-1, 2)
 		activeGroup = m.activeGroup()
-		items := activeGroup.Items()
+		items := activeGroup.Tasks()
 		maxY := len(items) - 1
 		if len(items) == 0 && m.position.X > 0 {
 			return m, newKeyMsg("h")
@@ -96,8 +96,8 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 	case key.Matches(msg, keys.right):
 		m.position.X = task.Clamp(0, m.position.X+1, 2)
 		activeGroup = m.activeGroup()
-		maxY := len(activeGroup.Items()) - 1
-		if len(activeGroup.Items()) == 0 && m.position.X < 2 {
+		maxY := len(activeGroup.Tasks()) - 1
+		if len(activeGroup.Tasks()) == 0 && m.position.X < 2 {
 			return m, newKeyMsg("l")
 		}
 		m.position.Y = task.Clamp(0, m.position.Y, maxY)
@@ -112,10 +112,10 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 		return m, nil
 	// PREVIOUS STATUS
 	case key.Matches(msg, keys.prevStatus):
-		todo := activeGroup.Items()[m.position.Y]
+		todo := activeGroup.Tasks()[m.position.Y]
 		for _, t := range m.todosList.Tasks() {
 			if t.Body() == todo.Body() {
-				t.Status = t.Status.Prev()
+				t.SetStatus(t.Status().Prev())
 			}
 		}
 
@@ -125,7 +125,7 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 			m.position.X = nextX
 			currGroup := m.activeGroup()
 
-			for i, t := range currGroup.Items() {
+			for i, t := range currGroup.Tasks() {
 				if t.Body() == todo.Body() {
 					nextY := i
 
@@ -136,10 +136,10 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 		}
 	// NEXT STATUS
 	case key.Matches(msg, keys.nextStatus):
-		todo := activeGroup.Items()[m.position.Y]
+		todo := activeGroup.Tasks()[m.position.Y]
 		for _, t := range m.todosList.Tasks() {
 			if t.Body() == todo.Body() {
-				t.Status = t.Status.Next()
+				t.SetStatus(t.Status().Next())
 			}
 		}
 
@@ -148,7 +148,7 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 			nextX := task.Clamp(0, m.position.X+1, 2)
 			m.position.X = nextX
 			currGroup := m.activeGroup()
-			for i, t := range currGroup.Items() {
+			for i, t := range currGroup.Tasks() {
 				if t.Body() == todo.Body() {
 					nextY := i
 

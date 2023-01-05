@@ -50,8 +50,7 @@ func RenderGroups(groups []task.Group, win Window, pos Position, textinput TextI
 		s.WriteString(g.Render())
 		if g.Status() == task.UncompletedStatus && textinput.enabled {
 			s.WriteString("\n")
-			inputContainer := lipgloss.NewStyle().
-				Border(lipgloss.RoundedBorder())
+			inputContainer := lipgloss.NewStyle().Border(lipgloss.RoundedBorder())
 			out := inputContainer.Render(textinput.input.View())
 			s.WriteString(out)
 		}

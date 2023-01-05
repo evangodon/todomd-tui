@@ -5,6 +5,10 @@ func truncate(str string, maxwidth int) string {
 		return str
 	}
 
+	if maxwidth <= 0 {
+		return str
+	}
+
 	maxwidth = max(1, maxwidth)
 	return str[0:maxwidth-1] + "…"
 }

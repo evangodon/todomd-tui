@@ -32,7 +32,7 @@ func (cmd Cmd) Add() *cli.Command {
 				return nil
 			}
 
-			todo := task.New(todoName, task.UncompletedStatus)
+			todo := task.New(todoName, task.UncompletedStatus, nil)
 			todosList.AddTask(todo)
 
 			if err := todosList.WriteToFile(); err != nil {

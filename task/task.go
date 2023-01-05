@@ -2,27 +2,40 @@ package task
 
 import (
 	"fmt"
+	"strings"
 
 	lg "github.com/charmbracelet/lipgloss"
 	"github.com/evangodon/todomd/ui"
 )
 
 type Task struct {
-	Status     Status
+	status     Status
 	body       string
 	maxWidth   int
 	isSelected bool
+	subTasks   []*Task
+	parent     *Task
 }
 
-func New(body string, status Status) *Task {
+func New(body string, status Status, parent *Task) *Task {
 	return &Task{
-		Status: status,
-		body:   body,
+		status:   status,
+		body:     body,
+		subTasks: make([]*Task, 0),
+		parent:   parent,
 	}
 }
 
+func (t *Task) Status() Status {
+	return t.status
+}
+
 func (t *Task) SetStatus(status Status) {
-	t.Status = status
+	t.status = status
+	for _, sub := range t.subTasks {
+		sub.SetStatus(status)
+	}
+	// TODO: if all subtasks have same  status, than change parent status to same
 }
 
 func (t *Task) SetMaxWidth(w int) {
@@ -33,8 +46,20 @@ func (t *Task) SetIsSelected(s bool) {
 	t.isSelected = s
 }
 
+func (t *Task) addSubTask(s *Task) {
+	t.subTasks = append(t.subTasks, s)
+}
+
 func (t Task) Body() string {
 	return t.body
+}
+
+func (t Task) SubTasks() []*Task {
+	return t.subTasks
+}
+
+func (t Task) Parent() *Task {
+	return t.parent
 }
 
 var (
@@ -70,10 +95,10 @@ var statusData = map[Status]struct {
 
 func (t Task) Render() string {
 	var icon lg.Style
-	data := statusData[t.Status]
+	data := statusData[t.Status()]
 	body := lg.NewStyle().SetString(truncate(t.Body(), t.maxWidth-4))
 
-	switch t.Status {
+	switch t.Status() {
 	case UncompletedStatus:
 		icon = ui.BlueText.SetString(data.termIcon)
 	case InProgressStatus:
@@ -87,10 +112,24 @@ func (t Task) Render() string {
 
 	if t.isSelected {
 		icon = ui.RedText.Bold(true).SetString("ᐅ")
-		body = body.Bold(true)
+		body = body.Bold(true).Inline(true)
 	}
 
-	return lg.NewStyle().Inline(true).Render(fmt.Sprintf("%s %s", icon, body))
+	subs := strings.Builder{}
+	moreRendered := false
+	for i, subTask := range t.SubTasks() {
+		if t.status != subTask.status {
+			subs.WriteString("\n")
+			if moreRendered || i < len(t.SubTasks())-1 {
+				subs.WriteString("  ├ " + subTask.Render())
+				continue
+			}
+			subs.WriteString("  └ " + subTask.Render())
+		}
+		moreRendered = true
+	}
+
+	return fmt.Sprintf("%s %s%s", icon, body, subs.String())
 }
 
 func (t Task) length() int {

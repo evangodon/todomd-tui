@@ -31,7 +31,7 @@ func (cmd Cmd) Start() *cli.Command {
 				return err
 			}
 
-			todo.Status = task.InProgressStatus
+			todo.SetStatus(task.InProgressStatus)
 
 			todosList.WriteToFile()
 

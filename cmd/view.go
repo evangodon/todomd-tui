@@ -22,15 +22,16 @@ func (c Cmd) View() *cli.Command {
 		Action: func(ctx *cli.Context) error {
 			file := ctx.String("file")
 
-			todosList := task.NewList(file)
-			if err := todosList.ParseFile(); err != nil {
+			list := task.NewList(file)
+			if err := list.ParseFile(); err != nil {
 				return err
 			}
 
+			groupedByStatus := list.GroupByStatus()
 			renderedGroups := []task.Group{
-				todosList.CreateGroup(task.UncompletedStatus),
-				todosList.CreateGroup(task.InProgressStatus),
-				todosList.CreateGroup(task.CompletedStatus),
+				groupedByStatus.Uncompleted,
+				groupedByStatus.InProgress,
+				groupedByStatus.Completed,
 			}
 
 			termWidth, termHeight := c.TermSize()

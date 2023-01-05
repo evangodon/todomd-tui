@@ -14,11 +14,11 @@ func TestTask_Render(t *testing.T) {
 		maxWidth int
 	}{
 		{
-			task:     *New("Validate config file and all modules", UncompletedStatus),
+			task:     *New("Validate config file and all modules", UncompletedStatus, nil),
 			maxWidth: 20,
 		},
 		{
-			task:     *New("use xdg paths for config", UncompletedStatus),
+			task:     *New("use xdg paths for config", UncompletedStatus, nil),
 			maxWidth: 10,
 		},
 	}

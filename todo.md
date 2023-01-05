@@ -2,7 +2,6 @@
 
 - [ ] Add j and k keys to select input
 - [ ] handle badly formatted headers in markdown
-- [ ] Create sub Todos
 - [ ] add G and g keybindings
 - [ ] improve parser, handle badly formatted headers
 - [ ] Add "type" field, indicated by ##
@@ -11,6 +10,9 @@
 
 # DONE
 
+- [x] Create subtask
+  - [x] Proper rendering of groups
+  - [x] Changing status of subtask
 - [x] How to rename package easily?
 - [x] add ability to add todo from TUI view
 - [x] Create better indicator for active column

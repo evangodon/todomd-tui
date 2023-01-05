@@ -5,6 +5,8 @@
 - [ ] Add loading state to modules
 - [ ] improve layout renderer
 - [ ] Add status bar at bottom
+  - [ ] Create component
+  - [ ] Styling
 
 # IN-PROGRESS
 

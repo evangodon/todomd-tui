@@ -57,15 +57,15 @@ func updateGroups(todos *task.List) task.GroupsByStatus {
 	return todos.GroupByStatus()
 }
 
-type todofileRead struct{ err error }
+type fileReadMsg struct{ err error }
 
 func (m model) Init() tea.Cmd {
 	return func() tea.Msg {
 		if err := m.todosList.ParseFile(); err != nil {
-			return todofileRead{err: err}
+			return fileReadMsg{err: err}
 		}
 
-		return todofileRead{}
+		return fileReadMsg{}
 	}
 }
 
@@ -84,7 +84,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.handleTextInputMsg(msg)
 	}
 	switch msg := msg.(type) {
-	case todofileRead:
+	case fileReadMsg:
 		if msg.err != nil {
 			m.err = msg.err
 			return m, nil
@@ -108,7 +108,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	if m.err != nil {
 		header := ui.RedText.SetString("Error")
-		return fmt.Sprintf("%s\n%s\n%s", header, m.err.Error(), "Press q to quit")
+		return lipgloss.NewStyle().
+			BorderForeground(ui.Color.Red).
+			Border(lipgloss.RoundedBorder()).
+			Padding(0, 1).
+			Render(fmt.Sprintf("%s\n%s\n%s", header, m.err.Error(), "Press q to quit"))
 	}
 	groups := RenderGroups([]task.Group{
 		m.groups.Uncompleted,
@@ -124,7 +128,7 @@ func (m model) View() string {
 	s := strings.Builder{}
 	s.WriteString(groups)
 	s.WriteString("\n")
-	s.WriteString(" " + helpbar)
+	s.WriteString(helpbar)
 
 	return s.String()
 }

@@ -11,11 +11,11 @@ func TestList_ParseFile(t *testing.T) {
 	err := list.ParseFile()
 	assert.NoError(t, err)
 
-	assert.Equal(t, 16, len(list.tasks))
+	assert.Equal(t, 18, len(list.Tasks()))
 
 	groups := list.GroupByStatus()
 
-	assert.Equal(t, 5, len(groups.Uncompleted.items))
-	assert.Equal(t, 1, len(groups.InProgress.items))
-	assert.Equal(t, 10, len(groups.Completed.items))
+	assert.Equal(t, 7, len(groups.Uncompleted.tasks))
+	assert.Equal(t, 1, len(groups.InProgress.tasks))
+	assert.Equal(t, 10, len(groups.Completed.tasks))
 }

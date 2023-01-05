@@ -15,22 +15,22 @@ import (
 // A group knows how to render itself in markdown or in the terminal
 type Group struct {
 	status   Status
-	items    []Task
+	tasks    []Task
 	maxWidth int
 	selected int
 }
 
-func newGroup(status Status, items []Task) *Group {
+func newGroup(status Status, tasks []Task) *Group {
 	return &Group{
 		status:   status,
-		items:    items,
+		tasks:    tasks,
 		maxWidth: 100,
 		selected: -1,
 	}
 }
 
-func (g Group) Items() []Task {
-	return g.items
+func (g Group) Tasks() []Task {
+	return g.tasks
 }
 
 func (g *Group) SetSelected(selected int) {
@@ -46,20 +46,20 @@ func (g Group) Status() Status {
 }
 
 func (g *Group) addTask(task Task) {
-	g.items = append(g.items, task)
+	g.tasks = append(g.tasks, task)
 }
 
 func (g *Group) removeTask(task Task) error {
-	n := len(g.items)
+	n := len(g.tasks)
 	index := sort.Search(n, func(i int) bool {
-		return g.items[i].Body() == task.Body()
+		return g.tasks[i].Body() == task.Body()
 	})
 
 	if index == n {
 		return errors.New("todo not found in TodosList")
 	}
 
-	g.items = append(g.items[:index], g.items[index+1:]...)
+	g.tasks = append(g.tasks[:index], g.tasks[index+1:]...)
 	return nil
 }
 
@@ -72,20 +72,35 @@ func (g *Group) Render() string {
 	out.WriteString(header)
 	out.WriteString("\n")
 
-	if len(g.items) == 0 {
+	if len(g.tasks) == 0 {
 		out.WriteString(ui.DimText.Render("\n(none)"))
 	}
 
-	for i, t := range g.items {
+	tasks := g.Tasks()
+	var lastParent Task
+	for i, t := range tasks {
+		if t.parent == nil {
+			lastParent = t
+		}
 		t.SetMaxWidth(g.maxWidth)
-		t.SetIsSelected(i == g.selected)
-		s := t.Render()
+		if i == g.selected {
+			t.SetIsSelected(true)
+		}
 
-		out.WriteString("\n" + s)
+		out.WriteString("\n")
+		if t.parent != nil && t.parent.Body() == lastParent.Body() {
+			if i == len(tasks)-1 || tasks[i+1].parent == nil {
+				out.WriteString("  └ " + t.Render())
+				continue
+			}
+
+			out.WriteString("  ├ " + t.Render())
+			continue
+		}
+		out.WriteString(t.Render())
 	}
 
-	return listContainer.Width(g.maxWidth).
-		Render(out.String())
+	return listContainer.Width(g.maxWidth).Render(out.String())
 }
 
 func (g Group) ToMarkdown() string {
@@ -106,13 +121,20 @@ func (g Group) ToMarkdown() string {
 	}
 	s.WriteString(header)
 	s.WriteString("\n\n")
-	if len(g.items) == 0 {
+	if len(g.tasks) == 0 {
 		return s.String()
 	}
 
-	for _, task := range g.items {
-		line := fmt.Sprintf("%s %s\n", statusData[g.status].mdIcon, task.Body())
+	for _, task := range g.tasks {
+		if task.parent != nil {
+			continue
+		}
+		line := fmt.Sprintf("%s %s\n", statusData[task.status].mdIcon, task.Body())
 		s.WriteString(line)
+		// TODO: figure out how to persist state of subtasks in file
+		for _, subTask := range task.SubTasks() {
+			s.WriteString(fmt.Sprintf("  %s %s\n", statusData[task.status].mdIcon, subTask.Body()))
+		}
 	}
 	s.WriteString("\n")
 
