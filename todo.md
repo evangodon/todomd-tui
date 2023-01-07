@@ -1,15 +1,14 @@
 # TODO
 
-- [ ] Add j and k keys to select input
 - [ ] handle badly formatted headers in markdown
 - [ ] add G and g keybindings
-- [ ] improve parser, handle badly formatted headers
 - [ ] Add "type" field, indicated by ##
 
 # IN-PROGRESS
 
 # DONE
 
+- [x] Fix file parsing
 - [x] Create subtask
   - [x] Proper rendering of groups
   - [x] Changing status of subtask

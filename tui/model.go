@@ -83,6 +83,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if m.textinput.enabled {
 		return m.handleTextInputMsg(msg)
 	}
+
 	switch msg := msg.(type) {
 	case fileReadMsg:
 		if msg.err != nil {

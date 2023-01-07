@@ -67,6 +67,7 @@ func (t *List) GroupByStatus() GroupsByStatus {
 }
 
 func (td *List) ParseFile() error {
+	// TODO: pass in io.Reader instead of opening file here
 	f, err := os.OpenFile(td.filename, os.O_RDWR, 0777)
 	if err != nil {
 		return fmt.Errorf("error opening file: %v", err)
@@ -81,15 +82,19 @@ func (td *List) ParseFile() error {
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		if strings.Contains(line, statusData[UncompletedStatus].header) {
+		if pattern := regexp.MustCompile(fmt.Sprintf(`(?i)^# TODO`)); pattern.MatchString(line) {
 			currentStatus = UncompletedStatus
 		}
 
-		if strings.Contains(line, statusData[InProgressStatus].header) {
+		if pattern := regexp.MustCompile(fmt.Sprintf(`(?i)^# IN-PROGRESS`)); pattern.MatchString(
+			line,
+		) {
 			currentStatus = InProgressStatus
 		}
 
-		if strings.Contains(line, statusData[CompletedStatus].header) {
+		if pattern := regexp.MustCompile(fmt.Sprintf(`(?i)^# DONE`)); pattern.MatchString(
+			line,
+		) {
 			currentStatus = CompletedStatus
 		}
 
