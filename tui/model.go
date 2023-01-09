@@ -107,6 +107,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case PositionMsg:
 		return m.handleNewPosition(msg)
+	case TaskActionMsg:
+		return m.handleTaskAction(msg)
 	}
 	return m, nil
 }

@@ -8,16 +8,17 @@ import (
 )
 
 type keyMap struct {
-	movement   key.Binding
-	left       key.Binding
-	right      key.Binding
-	down       key.Binding
-	up         key.Binding
-	nextStatus key.Binding
-	prevStatus key.Binding
-	add        key.Binding
-	help       key.Binding
-	quit       key.Binding
+	movement       key.Binding
+	left           key.Binding
+	right          key.Binding
+	down           key.Binding
+	up             key.Binding
+	moveNextStatus key.Binding
+	prevNextStatus key.Binding
+	startStop      key.Binding
+	add            key.Binding
+	help           key.Binding
+	quit           key.Binding
 }
 
 var keys = keyMap{
@@ -41,11 +42,15 @@ var keys = keyMap{
 		key.WithKeys("j", "down"),
 		key.WithHelp("j", "down"),
 	),
-	prevStatus: key.NewBinding(
+	startStop: key.NewBinding(
+		key.WithKeys("s"),
+		key.WithHelp("s", "start/stop"),
+	),
+	prevNextStatus: key.NewBinding(
 		key.WithKeys("H", "shift+left"),
 		key.WithHelp("H", "move todo left"),
 	),
-	nextStatus: key.NewBinding(
+	moveNextStatus: key.NewBinding(
 		key.WithKeys("L", "shift+right"),
 		key.WithHelp("L", "move todo right"),
 	),
@@ -71,7 +76,7 @@ func (k keyMap) FullHelp() [][]key.Binding {
 	k.help.SetHelp("?", "Close help")
 	return [][]key.Binding{
 		{k.movement, k.add},
-		{k.nextStatus, k.prevStatus},
+		{k.moveNextStatus, k.prevNextStatus},
 		{k.help, k.quit},
 	}
 }
@@ -100,48 +105,58 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 		m.position = m.position.GoDown()
 		return m, newPositionMsg(m.position)
 
-	// PREVIOUS STATUS
-	case key.Matches(msg, keys.prevStatus):
+	// START / STOP
+	case key.Matches(msg, keys.startStop):
 		todo := activeGroup.Tasks()[m.position.Y]
-		for _, t := range m.todosList.Tasks() {
-			if t.Body() == todo.Body() {
-				t.SetStatus(t.Status().Prev())
-			}
+
+		var goUp = func(m model) model {
+			m.position = m.position.GoUp()
+			return m
 		}
 
-		m.groups = updateGroups(m.todosList)
-		nextPos := m.position.GoLeft()
-		nextGroup := m.GetGroup(nextPos.X)
-
-		for i, t := range nextGroup.Tasks() {
-			if t.Body() == todo.Body() {
-				nextPos.Y = i
-
-				return m, newPositionMsg(nextPos)
-			}
+		if todo.Status() == task.UncompletedStatus {
+			return m, newTaskActionType(nextStatusType, todo, goUp)
 		}
-		return m, newPositionMsg(Position{0, 0})
+
+		if todo.Status() == task.InProgressStatus {
+			return m, newTaskActionType(prevStatusType, todo, goUp)
+		}
+
+		return m, nil
+
+	// PREVIOUS STATUS
+	case key.Matches(msg, keys.prevNextStatus):
+		todo := activeGroup.Tasks()[m.position.Y]
+
+		return m, newTaskActionType(prevStatusType, todo, func(m model) model {
+			nextPos := m.position.GoLeft()
+			nextGroup := m.GetGroup(nextPos.X)
+			for i, t := range nextGroup.Tasks() {
+				if t.Body() == todo.Body() {
+					nextPos.Y = i
+					m.position = nextPos
+					return m
+				}
+			}
+			return m
+		})
 
 	// NEXT STATUS
-	case key.Matches(msg, keys.nextStatus):
+	case key.Matches(msg, keys.moveNextStatus):
 		todo := activeGroup.Tasks()[m.position.Y]
-		for _, t := range m.todosList.Tasks() {
-			if t.Body() == todo.Body() {
-				t.SetStatus(t.Status().Next())
-			}
-		}
 
-		m.groups = updateGroups(m.todosList)
-		nextPos := m.position.GoRight()
-		nextGroup := m.GetGroup(nextPos.X)
-
-		for i, t := range nextGroup.Tasks() {
-			if t.Body() == todo.Body() {
-				nextPos.Y = i
-				return m, newPositionMsg(nextPos)
+		return m, newTaskActionType(nextStatusType, todo, func(m model) model {
+			nextPos := m.position.GoRight()
+			nextGroup := m.GetGroup(nextPos.X)
+			for i, t := range nextGroup.Tasks() {
+				if t.Body() == todo.Body() {
+					nextPos.Y = i
+					m.position = nextPos
+					return m
+				}
 			}
-		}
-		return m, newPositionMsg(Position{0, 0})
+			return m
+		})
 
 		// ADD TODO
 	case key.Matches(msg, keys.add):
