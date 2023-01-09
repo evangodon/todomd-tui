@@ -78,38 +78,28 @@ func (k keyMap) FullHelp() [][]key.Binding {
 
 func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 	activeGroup := m.activeGroup()
-	maxY := len(activeGroup.Tasks()) - 1
 
 	switch {
 	// LEFT
 	case key.Matches(msg, keys.left):
-		m.position.X = task.Clamp(0, m.position.X-1, 2)
-		activeGroup = m.activeGroup()
-		items := activeGroup.Tasks()
-		maxY := len(items) - 1
-		if len(items) == 0 && m.position.X > 0 {
-			return m, newKeyMsg("h")
-		}
-		m.position.Y = task.Clamp(0, m.position.Y, maxY)
-		return m, nil
+		next := m.position.GoLeft()
+		return m, newPositionMsg(next)
+
 	// RIGHT
 	case key.Matches(msg, keys.right):
-		m.position.X = task.Clamp(0, m.position.X+1, 2)
-		activeGroup = m.activeGroup()
-		maxY := len(activeGroup.Tasks()) - 1
-		if len(activeGroup.Tasks()) == 0 && m.position.X < 2 {
-			return m, newKeyMsg("l")
-		}
-		m.position.Y = task.Clamp(0, m.position.Y, maxY)
-		return m, nil
+		m.position = m.position.GoRight()
+		return m, newPositionMsg(m.position)
+
 	// UP
 	case key.Matches(msg, keys.up):
-		m.position.Y = task.Clamp(0, m.position.Y-1, maxY)
-		return m, nil
+		m.position = m.position.GoUp()
+		return m, newPositionMsg(m.position)
+
 	// DOWN
 	case key.Matches(msg, keys.down):
-		m.position.Y = task.Clamp(0, m.position.Y+1, maxY)
-		return m, nil
+		m.position = m.position.GoDown()
+		return m, newPositionMsg(m.position)
+
 	// PREVIOUS STATUS
 	case key.Matches(msg, keys.prevStatus):
 		todo := activeGroup.Tasks()[m.position.Y]
@@ -120,20 +110,18 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 		}
 
 		m.groups = updateGroups(m.todosList)
-		return m, func() tea.Msg {
-			nextX := task.Clamp(0, m.position.X-1, 2)
-			m.position.X = nextX
-			currGroup := m.activeGroup()
+		nextPos := m.position.GoLeft()
+		nextGroup := m.GetGroup(nextPos.X)
 
-			for i, t := range currGroup.Tasks() {
-				if t.Body() == todo.Body() {
-					nextY := i
+		for i, t := range nextGroup.Tasks() {
+			if t.Body() == todo.Body() {
+				nextPos.Y = i
 
-					return newPositionMsg(nextX, nextY)
-				}
+				return m, newPositionMsg(nextPos)
 			}
-			return newPositionMsg(0, 0)
 		}
+		return m, newPositionMsg(Position{0, 0})
+
 	// NEXT STATUS
 	case key.Matches(msg, keys.nextStatus):
 		todo := activeGroup.Tasks()[m.position.Y]
@@ -144,19 +132,17 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 		}
 
 		m.groups = updateGroups(m.todosList)
-		return m, func() tea.Msg {
-			nextX := task.Clamp(0, m.position.X+1, 2)
-			m.position.X = nextX
-			currGroup := m.activeGroup()
-			for i, t := range currGroup.Tasks() {
-				if t.Body() == todo.Body() {
-					nextY := i
+		nextPos := m.position.GoRight()
+		nextGroup := m.GetGroup(nextPos.X)
 
-					return newPositionMsg(nextX, nextY)
-				}
+		for i, t := range nextGroup.Tasks() {
+			if t.Body() == todo.Body() {
+				nextPos.Y = i
+				return m, newPositionMsg(nextPos)
 			}
-			return newPositionMsg(0, 0)
 		}
+		return m, newPositionMsg(Position{0, 0})
+
 		// ADD TODO
 	case key.Matches(msg, keys.add):
 		m.textinput.enabled = true
@@ -182,12 +168,5 @@ func newKeyMsg(key string) tea.Cmd {
 			Type:  tea.KeyRunes,
 			Runes: []rune(key),
 		}
-	}
-}
-
-func newPositionMsg(x, y int) tea.Msg {
-	return Position{
-		X: x,
-		Y: y,
 	}
 }

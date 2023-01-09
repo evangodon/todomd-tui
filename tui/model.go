@@ -17,11 +17,6 @@ type Window struct {
 	Height int
 }
 
-type Position struct {
-	Y int
-	X int
-}
-
 type TextInput struct {
 	input   textinput.Model
 	enabled bool
@@ -37,7 +32,7 @@ type model struct {
 	textinput TextInput
 }
 
-func NewInteractiveModel(file string) model {
+func NewModel(file string) model {
 	list := task.NewList(file)
 	return model{
 		todosList: list,
@@ -79,6 +74,16 @@ func (m model) activeGroup() task.Group {
 	return group[m.position.X]
 }
 
+func (m model) GetGroup(xPos int) task.Group {
+	group := map[int]task.Group{
+		0: m.groups.Uncompleted,
+		1: m.groups.InProgress,
+		2: m.groups.Completed,
+	}
+
+	return group[xPos]
+}
+
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	if m.textinput.enabled {
 		return m.handleTextInputMsg(msg)
@@ -100,8 +105,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.window.Width = msg.Width - appMargin
 		m.help.Width = msg.Width
 		return m, nil
-	case Position:
-		m.position = msg
+	case PositionMsg:
+		return m.handleNewPosition(msg)
 	}
 	return m, nil
 }

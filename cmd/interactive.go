@@ -14,7 +14,7 @@ func (cmd Cmd) Interactive() *cli.Command {
 		Action: func(ctx *cli.Context) error {
 			file := ctx.String("file")
 
-			p := tea.NewProgram(tui.NewInteractiveModel(file), tea.WithAltScreen())
+			p := tea.NewProgram(tui.NewModel(file), tea.WithAltScreen())
 			if _, err := p.Run(); err != nil {
 				return err
 			}

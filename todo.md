@@ -3,6 +3,7 @@
 - [ ] handle badly formatted headers in markdown
 - [ ] add G and g keybindings
 - [ ] Add "type" field, indicated by ##
+- [ ] create handler for task status changes
 
 # IN-PROGRESS
 
