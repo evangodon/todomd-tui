@@ -131,7 +131,6 @@ func (g Group) ToMarkdown() string {
 		}
 		line := fmt.Sprintf("%s %s\n", statusData[task.status].mdIcon, task.Body())
 		s.WriteString(line)
-		// TODO: figure out how to persist state of subtasks in file
 		for _, subTask := range task.SubTasks() {
 			s.WriteString(fmt.Sprintf("  %s %s\n", statusData[task.status].mdIcon, subTask.Body()))
 		}

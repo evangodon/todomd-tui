@@ -46,8 +46,19 @@ func (t *Task) SetIsSelected(s bool) {
 	t.isSelected = s
 }
 
-func (t *Task) addSubTask(s *Task) {
+func (t *Task) AddSubTask(s *Task) {
 	t.subTasks = append(t.subTasks, s)
+}
+
+func (t *Task) RemoveSubTask(s *Task) {
+	withRemoved := []*Task{}
+	for _, t := range t.SubTasks() {
+		if t.Body() != s.Body() {
+			withRemoved = append(withRemoved, t)
+		}
+	}
+
+	t.subTasks = withRemoved
 }
 
 func (t Task) Body() string {

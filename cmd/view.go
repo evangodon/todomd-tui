@@ -39,7 +39,7 @@ func (c Cmd) View() *cli.Command {
 				renderedGroups,
 				tui.Window{Width: termWidth, Height: termHeight},
 				tui.Position{Y: -1, X: -1},
-				tui.TextInput{},
+				tui.NewTaskInput{},
 			)
 
 			ui.Log(ui.LogDefault, out)

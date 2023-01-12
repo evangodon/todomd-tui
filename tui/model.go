@@ -17,9 +17,10 @@ type Window struct {
 	Height int
 }
 
-type TextInput struct {
+type NewTaskInput struct {
 	input   textinput.Model
 	enabled bool
+	parent  *task.Task
 }
 
 type model struct {
@@ -29,7 +30,7 @@ type model struct {
 	groups    task.GroupsByStatus
 	help      help.Model
 	err       error
-	textinput TextInput
+	textinput NewTaskInput
 }
 
 func NewModel(file string) model {
@@ -41,7 +42,7 @@ func NewModel(file string) model {
 		groups:    list.GroupByStatus(),
 		help:      help.New(),
 		err:       nil,
-		textinput: TextInput{
+		textinput: NewTaskInput{
 			input:   textinput.New(),
 			enabled: false,
 		},
@@ -109,6 +110,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.handleNewPosition(msg)
 	case TaskActionMsg:
 		return m.handleTaskAction(msg)
+	case TaskMsg:
+		return m.handleNewTaskMsg(msg)
 	}
 	return m, nil
 }

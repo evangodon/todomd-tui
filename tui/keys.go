@@ -16,7 +16,9 @@ type keyMap struct {
 	moveNextStatus key.Binding
 	prevNextStatus key.Binding
 	startStop      key.Binding
-	add            key.Binding
+	newTask        key.Binding
+	deleteTask     key.Binding
+	newSubTask     key.Binding
 	help           key.Binding
 	quit           key.Binding
 }
@@ -54,9 +56,17 @@ var keys = keyMap{
 		key.WithKeys("L", "shift+right"),
 		key.WithHelp("L", "move todo right"),
 	),
-	add: key.NewBinding(
+	newTask: key.NewBinding(
 		key.WithKeys("a"),
-		key.WithHelp("a", "add todo"),
+		key.WithHelp("a", "add task"),
+	),
+	newSubTask: key.NewBinding(
+		key.WithKeys("ctrl+a"),
+		key.WithHelp("ctrl+a", "add subtask"),
+	),
+	deleteTask: key.NewBinding(
+		key.WithKeys("D"),
+		key.WithHelp("D", "delete task"),
 	),
 	help: key.NewBinding(
 		key.WithKeys("?"),
@@ -75,11 +85,13 @@ func (k keyMap) ShortHelp() []key.Binding {
 func (k keyMap) FullHelp() [][]key.Binding {
 	k.help.SetHelp("?", "Close help")
 	return [][]key.Binding{
-		{k.movement, k.add},
+		{k.movement, k.newTask},
 		{k.moveNextStatus, k.prevNextStatus},
 		{k.help, k.quit},
 	}
 }
+
+// TODO: add method to getting selected task
 
 func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 	activeGroup := m.activeGroup()
@@ -158,9 +170,36 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 			return m
 		})
 
-		// ADD TODO
-	case key.Matches(msg, keys.add):
+		// ADD TASK
+	case key.Matches(msg, keys.newTask):
 		m.textinput.enabled = true
+		m.textinput.input.Width = task.Clamp(10, activeGroup.Width()-4, 50)
+		return m, tea.Batch(textinput.Blink, m.textinput.input.Focus())
+
+		// REMOVE TASK
+	case key.Matches(msg, keys.deleteTask):
+		selectedTask := activeGroup.Tasks()[m.position.Y]
+		var taskToDelete *task.Task
+		for _, t := range m.todosList.Tasks() {
+			if t.Body() == selectedTask.Body() {
+				taskToDelete = t
+			}
+		}
+		return m, NewTaskMsg(removeTask, taskToDelete)
+
+		// ADD SUBTASK
+	case key.Matches(msg, keys.newSubTask):
+		selectedTask := activeGroup.Tasks()[m.position.Y]
+		// Disable if task is already subtask
+		if selectedTask.Parent() != nil {
+			return m, nil
+		}
+		m.textinput.enabled = true
+		for _, t := range m.todosList.Tasks() {
+			if t.Body() == selectedTask.Body() {
+				m.textinput.parent = t
+			}
+		}
 		m.textinput.input.Width = task.Clamp(10, activeGroup.Width()-4, 50)
 		return m, tea.Batch(textinput.Blink, m.textinput.input.Focus())
 

@@ -5,29 +5,25 @@ import (
 	"github.com/evangodon/todomd/task"
 )
 
-type actionType int
+type statusAction int
 
 const (
-	nextStatusType actionType = iota
+	nextStatusType statusAction = iota
 	prevStatusType
 )
 
-// TODO: think of better names
 type taskActionFunc func(m model) model
 
-type TaskAction struct {
-	name           actionType
+type TaskActionMsg struct {
+	action         statusAction
 	task           task.Task
 	runAfterUpdate taskActionFunc
 }
 
-type TaskActionMsg TaskAction
-
-func newTaskActionType(name actionType, task task.Task, runAfterUpdate taskActionFunc) tea.Cmd {
-
+func newTaskActionType(action statusAction, task task.Task, runAfterUpdate taskActionFunc) tea.Cmd {
 	return func() tea.Msg {
 		return TaskActionMsg{
-			name:           name,
+			action:         action,
 			task:           task,
 			runAfterUpdate: runAfterUpdate,
 		}
@@ -36,7 +32,7 @@ func newTaskActionType(name actionType, task task.Task, runAfterUpdate taskActio
 
 func (m model) handleTaskAction(msg TaskActionMsg) (model, tea.Cmd) {
 	// check if todo is nil
-	switch msg.name {
+	switch msg.action {
 	case nextStatusType:
 		for _, t := range m.todosList.Tasks() {
 			if t.Body() == msg.task.Body() {

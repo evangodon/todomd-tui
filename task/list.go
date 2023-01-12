@@ -24,8 +24,18 @@ func (l List) Tasks() []*Task {
 	return l.tasks
 }
 
-func (t *List) AddTask(task *Task) {
-	t.tasks = append(t.tasks, task)
+func (l *List) AddTask(task *Task) {
+	l.tasks = append(l.tasks, task)
+}
+
+func (l *List) RemoveTask(task *Task) {
+	withRemoved := []*Task{}
+	for _, t := range l.tasks {
+		if t.Body() != task.Body() {
+			withRemoved = append(withRemoved, t)
+		}
+	}
+	l.tasks = withRemoved
 }
 
 func (t *List) FilterByStatus(status Status) []*Task {
@@ -112,7 +122,7 @@ func (td *List) ParseFile() error {
 			body := line[8:]
 			body = strings.TrimSpace(body)
 			subTask := New(body, currentStatus, currentTask)
-			currentTask.addSubTask(subTask)
+			currentTask.AddSubTask(subTask)
 			tasks = append(tasks, subTask)
 		}
 	}

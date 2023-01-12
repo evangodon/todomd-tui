@@ -1,6 +1,6 @@
 # TODO
 
-- [ ] create handler for task status changes, etc
+- [ ] Fix bug when adding subtask, only write render code once
 - [ ] handle badly formatted headers in markdown
 - [ ] add G and g keybindings
 - [ ] Add "type" field, indicated by ##
@@ -9,6 +9,8 @@
 
 # DONE
 
+- [x] add handler for adding tasks
+- [x] create handler for task status changes, etc
 - [x] Fix file parsing
 - [x] Create subtask
   - [x] Proper rendering of groups

@@ -15,7 +15,7 @@ var (
 	boldText = lipgloss.NewStyle().Bold(true).Render
 )
 
-func RenderGroups(groups []task.Group, win Window, pos Position, textinput TextInput) string {
+func RenderGroups(groups []task.Group, win Window, pos Position, textinput NewTaskInput) string {
 	termWidth := win.Width
 	totalNumGroups := len(groups)
 
