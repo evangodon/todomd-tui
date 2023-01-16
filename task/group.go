@@ -30,7 +30,18 @@ func newGroup(status Status, tasks []Task) *Group {
 }
 
 func (g Group) Tasks() []Task {
-	return g.tasks
+	groupTasks := []Task{}
+	for _, t := range g.tasks {
+		if t.parent != nil && t.parent.Status() == t.Status() {
+			continue
+		}
+		groupTasks = append(groupTasks, t)
+		for _, sub := range t.SubTasks() {
+			groupTasks = append(groupTasks, *sub)
+		}
+	}
+
+	return groupTasks
 }
 
 func (g *Group) SetSelected(selected int) {
@@ -77,27 +88,38 @@ func (g *Group) Render() string {
 	}
 
 	tasks := g.Tasks()
-	var lastParent Task
 	for i, t := range tasks {
-		if t.parent == nil {
-			lastParent = t
-		}
 		t.SetMaxWidth(g.maxWidth)
+		t.SetIsSelected(false)
 		if i == g.selected {
 			t.SetIsSelected(true)
 		}
 
-		out.WriteString("\n")
-		if t.parent != nil && t.parent.Body() == lastParent.Body() {
-			if i == len(tasks)-1 || tasks[i+1].parent == nil {
-				out.WriteString("  └ " + t.Render())
-				continue
-			}
-
-			out.WriteString("  ├ " + t.Render())
+		if t.parent != nil && t.Status() != g.status {
 			continue
 		}
+
+		if t.parent != nil && t.parent.Status() == t.Status() {
+			continue
+		}
+
+		out.WriteString("\n")
 		out.WriteString(t.Render())
+
+		// Render all subtasks
+		for j, sub := range t.SubTasks() {
+			out.WriteString("\n")
+
+			sub.SetIsSelected(false)
+			if i+j+1 == g.selected {
+				sub.SetIsSelected(true)
+			}
+			if j < len(t.SubTasks())-1 {
+				out.WriteString("  ├ " + sub.Render())
+				continue
+			}
+			out.WriteString("  └ " + sub.Render())
+		}
 	}
 
 	return listContainer.Width(g.maxWidth).Render(out.String())

@@ -91,7 +91,7 @@ func (k keyMap) FullHelp() [][]key.Binding {
 	}
 }
 
-// TODO: add method to getting selected task
+// TODO: add method for getting selected task
 
 func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 	activeGroup := m.activeGroup()
@@ -121,17 +121,17 @@ func (m model) handleKey(msg tea.KeyMsg) (model, tea.Cmd) {
 	case key.Matches(msg, keys.startStop):
 		todo := activeGroup.Tasks()[m.position.Y]
 
-		var goUp = func(m model) model {
-			m.position = m.position.GoUp()
+		var moveToExistingTask = func(m model) model {
+			m.position.Y = task.Clamp(0, m.position.Y, len(m.activeGroup().Tasks())-1)
 			return m
 		}
 
 		if todo.Status() == task.UncompletedStatus {
-			return m, newTaskActionType(nextStatusType, todo, goUp)
+			return m, newTaskActionType(nextStatusType, todo, moveToExistingTask)
 		}
 
 		if todo.Status() == task.InProgressStatus {
-			return m, newTaskActionType(prevStatusType, todo, goUp)
+			return m, newTaskActionType(prevStatusType, todo, moveToExistingTask)
 		}
 
 		return m, nil

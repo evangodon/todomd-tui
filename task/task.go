@@ -2,7 +2,6 @@ package task
 
 import (
 	"fmt"
-	"strings"
 
 	lg "github.com/charmbracelet/lipgloss"
 	"github.com/evangodon/todomd/ui"
@@ -126,21 +125,19 @@ func (t Task) Render() string {
 		body = body.Bold(true).Inline(true)
 	}
 
-	subs := strings.Builder{}
-	moreRendered := false
-	for i, subTask := range t.SubTasks() {
-		if t.status != subTask.status {
-			subs.WriteString("\n")
-			if moreRendered || i < len(t.SubTasks())-1 {
-				subs.WriteString("  ├ " + subTask.Render())
-				continue
-			}
-			subs.WriteString("  └ " + subTask.Render())
-		}
-		moreRendered = true
-	}
+	// subs := strings.Builder{}
+	// moreRendered := false
+	// for i, subTask := range t.SubTasks() {
+	// 	subs.WriteString("\n")
+	// 	if moreRendered || i < len(t.SubTasks())-1 {
+	// 		subs.WriteString("  ├ " + subTask.Render())
+	// 		continue
+	// 	}
+	// 	subs.WriteString("  └ " + subTask.Render())
+	// 	moreRendered = true
+	// }
 
-	return fmt.Sprintf("%s %s%s", icon, body, subs.String())
+	return fmt.Sprintf("%s %s", icon, body)
 }
 
 func (t Task) length() int {
