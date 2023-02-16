@@ -7,10 +7,11 @@
   - [ ] Buy flight ticket
   - [ ] Rent car
 - [ ] Clean the house
+- [ ] Learn Rust
 
 # IN-PROGRESS
 
-- [ ] Finish a work project
+- [ ] Fix bug
 
 # DONE
 
